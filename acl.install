@@ -2,29 +2,59 @@
 // $Id$
 
 function acl_install() {
-  db_query("create table if not exists {acl} (
-    acl_id int(10) NOT NULL default 0,
-    module varchar(255),
-    name varchar(255),
-    KEY acl_id (acl_id)
-  );");
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("create table if not exists {acl} (
+        acl_id int(10) NOT NULL default 0,
+        module varchar(255),
+        name varchar(255),
+        KEY acl_id (acl_id)
+      );");
 
-  db_query("create table if not exists {acl_user} (
-    acl_id int(10) NOT NULL default 0,
-    uid int(10) NOT NULL default 0,
-    KEY acl_id (acl_id),
-    KEY uid (uid)
-  );");
+      db_query("create table if not exists {acl_user} (
+        acl_id int(10) NOT NULL default 0,
+        uid int(10) NOT NULL default 0,
+        KEY acl_id (acl_id),
+        KEY uid (uid)
+      );");
     
-  db_query("create table if not exists {acl_node} (
-    acl_id int(10) NOT NULL default 0,
-    nid int(10) NOT NULL default 0,
-    grant_view tinyint(1) unsigned NOT NULL default '0',
-    grant_update tinyint(1) unsigned NOT NULL default '0',
-    grant_delete tinyint(1) unsigned NOT NULL default '0',
-    KEY acl_id (acl_id),
-    KEY nid (nid)
-  );");
+      db_query("create table if not exists {acl_node} (
+        acl_id int(10) NOT NULL default 0,
+        nid int(10) NOT NULL default 0,
+        grant_view tinyint(1) unsigned NOT NULL default '0',
+        grant_update tinyint(1) unsigned NOT NULL default '0',
+        grant_delete tinyint(1) unsigned NOT NULL default '0',
+        KEY acl_id (acl_id),
+        KEY nid (nid)
+      );");
+      break;
+    case 'pgsql':
+      db_query("CREATE TABLE {acl} (
+        acl_id int NOT NULL DEFAULT 0,
+        module varchar(255),
+        name varchar(255),
+        PRIMARY KEY (acl_id)
+      );");
 
+      db_query("CREATE TABLE {acl_user} (
+        acl_id int NOT NULL DEFAULT 0,
+        uid int NOT NULL DEFAULT 0,
+        PRIMARY KEY (acl_id)
+      );");
+    
+      db_query("CREATE TABLE {acl_node} (
+        acl_id int NOT NULL DEFAULT 0,
+        nid int NOT NULL DEFAULT 0,
+        grant_view smallint NOT NULL default 0,
+        grant_update smallint NOT NULL default 0,
+        grant_delete smallint NOT NULL default 0,
+        PRIMARY KEY (acl_id)
+      );");
+
+      db_query("CREATE INDEX {acl_node}_nid ON {acl_node} (nid)");
+
+      break;
+  }
   drupal_set_message("acl database tables created.");
 }
