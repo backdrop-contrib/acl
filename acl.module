@@ -11,20 +11,10 @@
  */
 
 /**
- * Implementation of hook_help
- */
-function acl_help($section) {
-  switch($section) {
-    case 'admin/modules#description':
-      return t('acls module provides an API for other modules to use Access Control List. It contains no user-serviceable parts.');
-  }
-}
-
-/**
  * Create a new ACL.
  */
 function acl_create_new_acl($module, $name) {
-  $acl_id = db_next_id('acl_id');
+  $acl_id = db_next_id('{acl}_acl_id');
   db_query("INSERT INTO {acl} (acl_id, module, name) VALUES (%d, '%s', '%s')", $acl_id, $module, $name);
   return $acl_id;
 }
@@ -42,7 +32,7 @@ function acl_delete_acl($acl_id) {
  * Add the specified UID to an ACL.
  */
 function acl_add_user($acl_id, $uid) {
-  $test_uid = db_result(db_query("SELECT uid FROM {acl_user} WHERE acl_id = $d AND uid = %d ", $acl_id, $uid));
+  $test_uid = db_result(db_query("SELECT uid FROM {acl_user} WHERE acl_id = %d AND uid = %d ", $acl_id, $uid));
   if (!$test_uid) {
     db_query("INSERT INTO {acl_user} (acl_id, uid) VALUES (%d, %d)", $acl_id, $uid);
   }
@@ -52,14 +42,14 @@ function acl_add_user($acl_id, $uid) {
  * Remove the specified UID from an ACL.
  */
 function acl_remove_user($acl_id, $uid) {
-  db_query("DELETE FROM {acl_user} WHERE acl_id = $d AND uid = %d ", $acl_id, $uid);
+  db_query("DELETE FROM {acl_user} WHERE acl_id = %d AND uid = %d ", $acl_id, $uid);
 }
 
 /**
  * Provide a special button type that doesn't get its #name blasted.
  */
 function acl_elements() {
-  $type['acl_button'] = array('#input' => TRUE, '#button_type' => 'submit', '#form_submitted' => FALSE);
+  $type['acl_button'] = array('#input' => TRUE, '#button_type' => 'submit', '#executes_submit_callback' => FALSE);
   return $type;
 }
 
@@ -75,7 +65,7 @@ function theme_acl_button($element) {
 function acl_edit_form($acl_id, $label = NULL) {
   // Ensure the ACL in question even exists.
   if (!$acl_name = db_result(db_query("SELECT name FROM {acl} WHERE acl_id = %d", $acl_id))) {
-    return $form;
+    return array();
   }
   if (!$label) {
     $label = $acl_name;
@@ -96,7 +86,7 @@ function acl_edit_form($acl_id, $label = NULL) {
 
   $form['acl_id'] = array('#type' => 'value', '#value' => $acl_id);
 
-  $form['deletions'] = array('#type' => 'hidden'); // placeholder
+  $form['deletions'] = array('#type' => 'checkboxes'); // placeholder
   $form['delete_button'] = array(
     '#type' => 'acl_button',
     '#label' => t('Remove Checked')
@@ -144,7 +134,7 @@ function acl_edit_form_after_build($form, $form_values) {
   // ok tho cause #value still works for us.
   $user_list = unserialize($form['user_list']['#value']);
   if ($form['delete_button']['#value'] && is_array($form['deletions']['#value'])) {
-    foreach($form['deletions']['#value'] as $uid) {
+    foreach ($form['deletions']['#value'] as $uid) {
       unset($user_list[$uid]);
     }
   }
@@ -208,16 +198,61 @@ function acl_node_clear_acls($nid, $module) {
 }
 
 /**
+ * Gets the id of an acl
+ */
+function acl_get_id_by_name($module, $name) {
+  return db_result(db_query("SELECT acl_id FROM {acl} WHERE module = '%s' AND name = '%s'", $module, $name));
+}
+
+/**
+ * Determines if an acl has some assigned users
+ */
+function acl_has_users($acl_id) {
+  return db_result(db_query("SELECT COUNT(aclu.uid) FROM {acl_user} aclu WHERE acl_id = %d", $acl_id));
+}
+
+/**
  * Implementation of hook_node_access_grants (from node_access)
  */
 function acl_node_access_records($node) {
   if (!$node->nid) {
     return;
   }
-  $result = db_query("SELECT *, 'acl' AS realm, acl_id AS gid FROM {acl_node} WHERE nid = %d", $node->nid);
+  $result = db_query("SELECT n.*, 'acl' AS realm, n.acl_id AS gid, a.module FROM {acl_node} n INNER JOIN {acl} a ON n.acl_id = a.acl_id WHERE nid = %d", $node->nid);
+  $grants = array();
   while ($grant = db_fetch_array($result)) {
-    $grants[] = $grant;
+    if (module_exists($grant['module']) && module_invoke($grant['module'], 'enabled')) {
+      if (acl_has_users($grant['gid'])) {
+        $grants[] = $grant;
+      }
+      else {
+        //just deny access
+        $grants[] = array('grant_view' => 0, 'realm' => 'acl', 'gid' => 0);
+      }
+    }
   }
   return $grants;
+}
+
+/**
+ * Implementation of hook_node_grants
+ */
+function acl_node_grants($account, $op) {
+  $array = array('acl' => array());
+  $result = db_query("SELECT acl_id FROM {acl_user} WHERE uid = %d", $account->uid);
+  while ($row = db_fetch_object($result)) {
+    $array['acl'][] = $row->acl_id;
+  }
+  return !empty($array['acl']) ? $array : NULL;
+}
+
+/**
+ * Implementation of hook_disable
+ */
+function acl_disable() {
+  drupal_set_message(t('You have disabled the ACL module&mdash;to avoid permission problems you should now go to !link and click on the [!button] button!', array(
+    '!link' => l('admin/content/node-settings', 'admin/content/node-settings'),
+    '!button' => t('Rebuild permissions'),
+  )));
 }
 
