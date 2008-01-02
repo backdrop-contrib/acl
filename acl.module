@@ -55,9 +55,20 @@ function acl_elements() {
   return $type;
 }
 
-function theme_acl_button($element) {
+function theme_acl_button_format($element) {
   $element['#value'] = $element['#label'];
   return theme('button', $element);
+}
+
+/**
+ * Implementation of hook_theme
+ */
+function acl_button_theme() {
+  return array(
+    'acl_button_format' => array(
+      'arguments' => array('element'),
+    ),
+  );
 }
 
 /**
