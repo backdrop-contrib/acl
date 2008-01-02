@@ -4,7 +4,7 @@
 /** 
  * @file acl.module
  * 
- * This module handls ACLs on behalf of other modules. The two main reasons
+ * This module handles ACLs on behalf of other modules. The two main reasons
  * to do this are so that modules using ACLs can share them with each
  * other without having to actually know much about them, and so that
  * ACLs can easily co-exist with the existing node_access system.
@@ -14,9 +14,11 @@
  * Create a new ACL.
  */
 function acl_create_new_acl($module, $name) {
-  $acl_id = db_next_id('{acl}_acl_id');
-  db_query("INSERT INTO {acl} (acl_id, module, name) VALUES (%d, '%s', '%s')", $acl_id, $module, $name);
-  return $acl_id;
+  $acl = array('module' => $module, 'name' => $name);
+  drupal_write_record('acl', $acl);
+  ///$acl_id = db_next_id('{acl}_acl_id');
+  ///db_query("INSERT INTO {acl} (acl_id, module, name) VALUES (%d, '%s', '%s')", $acl_id, $module, $name);
+  return $acl['acl_id'];
 }
 
 /**
@@ -247,12 +249,23 @@ function acl_node_grants($account, $op) {
 }
 
 /**
- * Implementation of hook_disable
+ * Implementation of hook_node_access_interpret
  */
-function acl_disable() {
-  drupal_set_message(t('You have disabled the ACL module&mdash;to avoid permission problems you should now go to !link and click on the [!button] button!', array(
-    '!link' => l('admin/content/node-settings', 'admin/content/node-settings'),
-    '!button' => t('Rebuild permissions'),
-  )));
+function acl_node_access_interpret($realm, $gid, $nid) {
+  static $interpretations = array();
+  if ($realm == 'acl') {
+    if (!isset($interpretations[$gid])) {
+      $acl = db_fetch_object(db_query("SELECT * from {acl} WHERE acl_id = %d", $gid));
+      $interpretations[$gid] = $acl->module .'/'. $acl->name;
+      $result = db_query("SELECT u.name FROM {acl_user} au, {users} u WHERE au.acl_id = %d AND au.uid = u.uid", $gid);
+      while ($user = db_fetch_object($result)) {
+        $users[] = $user->name;
+      }
+      if ($users) {
+        $interpretations[$gid] .= ': '. implode(', ', $users);
+      }
+    }
+    return $interpretations[$gid];
+  }
 }
 

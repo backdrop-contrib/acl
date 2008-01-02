@@ -1,3 +1,5 @@
 name = ACL
 description = Access control list API. Has no features on its own.
 package = Access control
+core = 6.x
+

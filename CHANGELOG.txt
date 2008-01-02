@@ -2,4 +2,5 @@ CHANGELOG for ACL for Drupal 6
 
 ACL HEAD:
   Copied from 5.x-1.5
+  Ported to D6
 
