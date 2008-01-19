@@ -260,23 +260,23 @@ function acl_node_grants($account, $op) {
 }
 
 /**
- * Implementation of hook_node_access_interpret
+ * Implementation of hook_node_access_explain
  */
-function acl_node_access_interpret($realm, $gid, $nid) {
+function acl_node_access_explain($row) {
   static $interpretations = array();
-  if ($realm == 'acl') {
-    if (!isset($interpretations[$gid])) {
-      $acl = db_fetch_object(db_query("SELECT * from {acl} WHERE acl_id = %d", $gid));
-      $interpretations[$gid] = $acl->module .'/'. $acl->name;
-      $result = db_query("SELECT u.name FROM {acl_user} au, {users} u WHERE au.acl_id = %d AND au.uid = u.uid", $gid);
+  if ($row->realm == 'acl') {
+    if (!isset($interpretations[$row->gid])) {
+      $acl = db_fetch_object(db_query("SELECT * from {acl} WHERE acl_id = %d", $row->gid));
+      $interpretations[$row->gid] = $acl->module .'/'. $acl->name;
+      $result = db_query("SELECT u.name FROM {acl_user} au, {users} u WHERE au.acl_id = %d AND au.uid = u.uid", $row->gid);
       while ($user = db_fetch_object($result)) {
         $users[] = $user->name;
       }
       if ($users) {
-        $interpretations[$gid] .= ': '. implode(', ', $users);
+        $interpretations[$row->gid] .= ': '. implode(', ', $users);
       }
     }
-    return $interpretations[$gid];
+    return $interpretations[$row->gid];
   }
 }
 
