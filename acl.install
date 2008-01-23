@@ -44,7 +44,7 @@ function acl_schema() {
         'not null'    => TRUE, 
         'default'     => 0)),
     'primary key'     => array('acl_id', 'uid'),
-    'unique keys'     => array(
+    'indexes'         => array(
       'uid'           => array('uid')),
   );
   $schema['acl_node'] = array(
