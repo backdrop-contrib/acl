@@ -48,30 +48,6 @@ function acl_remove_user($acl_id, $uid) {
 }
 
 /**
- * Provide a special button type that doesn't get its #name blasted.
- */
-function acl_elements() {
-  $type['acl_button'] = array('#input' => TRUE, '#button_type' => 'submit', '#executes_submit_callback' => FALSE);
-  return $type;
-}
-
-function theme_acl_button_format($element) {
-  $element['#value'] = $element['#label'];
-  return theme('button', $element);
-}
-
-/**
- * Implementation of hook_theme
- */
-function acl_button_theme() {
-  return array(
-    'acl_button_format' => array(
-      'arguments' => array('element'),
-    ),
-  );
-}
-
-/**
  * Provide a form to edit the ACL that can be embedded in other
  * forms.
  */
@@ -101,8 +77,9 @@ function acl_edit_form($acl_id, $label = NULL) {
 
   $form['deletions'] = array('#type' => 'checkboxes'); // placeholder
   $form['delete_button'] = array(
-    '#type' => 'acl_button',
-    '#label' => t('Remove Checked')
+    '#type' => 'button',
+    '#value' => t('Remove Checked'),
+    '#submit' => FALSE,
   );
 
   $form['add'] = array(
@@ -113,8 +90,9 @@ function acl_edit_form($acl_id, $label = NULL) {
     '#autocomplete_path' => 'user/autocomplete', 
   );
   $form['add_button'] = array(
-    '#type' => 'acl_button',
-    '#label' => t('Add User'),
+    '#type' => 'button',
+    '#value' => t('Add User'),
+    '#submit' => FALSE,
   );
 
   $form['user_list'] = array(
@@ -146,12 +124,13 @@ function acl_edit_form_after_build($form, $form_values) {
   // and we have no clue where our values actually are. That's
   // ok tho cause #value still works for us.
   $user_list = unserialize($form['user_list']['#value']);
-  if ($form['delete_button']['#value'] && is_array($form['deletions']['#value'])) {
-    foreach ($form['deletions']['#value'] as $uid) {
+  if (array_key_exists('op', $form['delete_button']['#post']) && $form['delete_button']['#post']['op'] == $form['delete_button']['#value']) {
+    $deletions = $form['deletions']['#value'];
+    foreach ($deletions as $uid) {
       unset($user_list[$uid]);
     }
   }
-  else if ($form['add_button']['#value']) {
+  else if (array_key_exists('op', $form['add_button']['#post']) && $form['add_button']['#post']['op'] == $form['add_button']['#value']) {
     $name = $form['add']['#value'];
     $u = db_fetch_object(db_query("SELECT uid, name FROM {users} WHERE name = '%s'", $name));
     if (!$u->uid) {
@@ -171,7 +150,7 @@ function acl_edit_form_after_build($form, $form_values) {
     // need $form_id and have no way to get it but from $_POST that
     // I can find; and if we got here that variable's already been
     // checked.
-    $form['deletions'] = form_builder($_POST['form_id'], $form['deletions']);
+    $form['deletions'] = form_builder($form_values['values']['form_id'], $form['deletions'], $form_values);
   }
   else {
     $form['delete_button']['#type'] = 'value';

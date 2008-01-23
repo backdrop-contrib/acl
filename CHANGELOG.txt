@@ -1,6 +1,7 @@
 CHANGELOG for ACL for Drupal 6
 
 ACL HEAD:
+  Make the embeddable form work.
   It's really hook_node_access_explain().
   Ported to D6 (and inadvertently committed hook_node_access_interpret()).
   Copied from 5.x-1.5.
