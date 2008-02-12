@@ -1,9 +1,13 @@
 CHANGELOG for ACL for Drupal 6
 
-ACL HEAD:
-  Fix index conflict.
-  Make the embeddable form work.
-  It's really hook_node_access_explain().
-  Ported to D6 (and inadvertently committed hook_node_access_interpret()).
-  Copied from 5.x-1.5.
+acl HEAD:
+  Porting to D6:
+    - Improve acl_node_access_explain().
+    - Avoid generating E_NOTICEs.
+    - Make [Delete] button work.
+    - Fix index conflict.
+    - Make the embeddable form work.
+    - It's really hook_node_access_explain().
+    - Ported to D6 (and inadvertently committed hook_node_access_interpret()).
+    - Copied from 5.x-1.5.
 

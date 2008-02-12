@@ -75,7 +75,7 @@ function acl_edit_form($acl_id, $label = NULL) {
 
   $form['acl_id'] = array('#type' => 'value', '#value' => $acl_id);
 
-  $form['deletions'] = array('#type' => 'checkboxes'); // placeholder
+  $form['deletions'] = array('#type' => 'checkboxes', '#options' => array()); // placeholder
   $form['delete_button'] = array(
     '#type' => 'button',
     '#value' => t('Remove Checked'),
@@ -215,11 +215,19 @@ function acl_node_access_records($node) {
   while ($grant = db_fetch_array($result)) {
     if (module_exists($grant['module']) && module_invoke($grant['module'], 'enabled')) {
       if (acl_has_users($grant['gid'])) {
+        $grant['priority'] = 0;
         $grants[] = $grant;
       }
       else {
         //just deny access
-        $grants[] = array('grant_view' => 0, 'realm' => 'acl', 'gid' => 0);
+        $grants[] = array(
+          'realm' => 'acl', 
+          'gid' => 0, 
+          'grant_view' => 0, 
+          'grant_update' => 0, 
+          'grant_delete' => 0, 
+          'priority' => 0,
+        );
       }
     }
   }
@@ -251,8 +259,11 @@ function acl_node_access_explain($row) {
       while ($user = db_fetch_object($result)) {
         $users[] = $user->name;
       }
-      if ($users) {
+      if (isset($users)) {
         $interpretations[$row->gid] .= ': '. implode(', ', $users);
+      }
+      else {
+        $interpretations[$row->gid] .= ': no users!';
       }
     }
     return $interpretations[$row->gid];
