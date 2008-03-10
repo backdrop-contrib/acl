@@ -247,6 +247,17 @@ function acl_node_grants($account, $op) {
 }
 
 /**
+ * Implementation of hook_nodeapi
+ */
+function acl_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  switch ($op) {
+    case 'delete':
+      db_query("DELETE FROM {acl_node} WHERE nid = %d", $node->nid);
+      break;
+  }
+}
+
+/**
  * Implementation of hook_node_access_explain
  */
 function acl_node_access_explain($row) {

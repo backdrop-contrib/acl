@@ -82,6 +82,8 @@ function acl_schema() {
         'not null'    => TRUE, 
         'default'     => 0)),
     'primary key'     => array('acl_id', 'nid'),
+    'indexes'         => array(
+      'nid'           => array('nid')),
   );
   return $schema;
 }
@@ -108,5 +110,15 @@ function acl_update_2() {
   db_add_primary_key($ret, 'acl', array('acl_id'));
   db_add_primary_key($ret, 'acl_user', array('acl_id', 'uid'));
   db_add_primary_key($ret, 'acl_node', array('acl_id', 'nid'));
+  return $ret;
+}
+
+/**
+ * Put back acl_node(nid) index for deleting nodes.
+ */
+function acl_update_4() {
+  $ret = array();
+  db_add_index($ret, 'acl_node', 'nid', array('nid'));
+  db_query("DELETE FROM {acl_node} WHERE nid NOT IN (SELECT nid FROM {node})");
   return $ret;
 }
