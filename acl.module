@@ -124,13 +124,14 @@ function acl_edit_form_after_build($form, $form_values) {
   // and we have no clue where our values actually are. That's
   // ok tho cause #value still works for us.
   $user_list = unserialize($form['user_list']['#value']);
-  if (array_key_exists('op', $form['delete_button']['#post']) && $form['delete_button']['#post']['op'] == $form['delete_button']['#value']) {
+  if (isset($form['delete_button']['#post']['op']) && $form['delete_button']['#post']['op'] == $form['delete_button']['#value']) {
     $deletions = $form['deletions']['#value'];
     foreach ($deletions as $uid) {
       unset($user_list[$uid]);
+      unset($form['deletions']['#value'][$uid]);
     }
   }
-  else if (array_key_exists('op', $form['add_button']['#post']) && $form['add_button']['#post']['op'] == $form['add_button']['#value']) {
+  else if (isset($form['add_button']['#post']['op']) && $form['add_button']['#post']['op'] == $form['add_button']['#value']) {
     $name = $form['add']['#value'];
     $u = db_fetch_object(db_query("SELECT uid, name FROM {users} WHERE name = '%s'", $name));
     if (!$u->uid) {

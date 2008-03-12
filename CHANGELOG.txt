@@ -2,6 +2,7 @@ CHANGELOG for ACL for Drupal 6
 
 acl HEAD:
   Porting to D6:
+    - #232413: Fix error message when removing the last moderator.
     - #231096: Implement hook_nodeapi('delete') and remove orphaned {acl_node} records.
     - Improve acl_node_access_explain().
     - Avoid generating E_NOTICEs.
