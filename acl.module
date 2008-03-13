@@ -259,6 +259,17 @@ function acl_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
 }
 
 /**
+ * Implementation of hook_user
+ */
+function acl_user($op, &$edit, &$account, $category = NULL) {
+  switch ($op) {
+    case 'delete':
+      db_query("DELETE FROM {acl_user} WHERE uid = %d", $account->uid);
+      break;
+  }
+}
+
+/**
  * Implementation of hook_node_access_explain
  */
 function acl_node_access_explain($row) {

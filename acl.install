@@ -114,11 +114,20 @@ function acl_update_2() {
 }
 
 /**
- * Put back acl_node(nid) index for deleting nodes.
+ * Put back acl_node(nid) index for deleting nodes and clean up {acl_node}.
  */
 function acl_update_4() {
   $ret = array();
   db_add_index($ret, 'acl_node', 'nid', array('nid'));
   db_query("DELETE FROM {acl_node} WHERE nid NOT IN (SELECT nid FROM {node})");
+  return $ret;
+}
+
+/**
+ * Clean up {acl_user}.
+ */
+function acl_update_5() {
+  $ret = array();
+  db_query("DELETE FROM {acl_user} WHERE uid NOT IN (SELECT uid FROM {users})");
   return $ret;
 }
