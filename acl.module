@@ -48,16 +48,24 @@ function acl_remove_user($acl_id, $uid) {
 }
 
 /**
- * Provide a form to edit the ACL that can be embedded in other
- * forms.
+ * Provide a form to edit the ACL that can be embedded in other forms.
+ * Pass $new_acl=TRUE if you have no ACL yet, but do supply a string 
+ * like 'my_module_new_acl' as $acl_id anyway.
  */
-function acl_edit_form($acl_id, $label = NULL) {
-  // Ensure the ACL in question even exists.
-  if (!$acl_name = db_result(db_query("SELECT name FROM {acl} WHERE acl_id = %d", $acl_id))) {
-    return array();
+function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
+  $users = array();
+  if (!$new_acl) {
+    // Ensure the ACL in question even exists.
+    if (!$acl_name = db_result(db_query("SELECT name FROM {acl} WHERE acl_id = %d", $acl_id))) {
+      return array();
+    }
+    $result = db_query("SELECT u.uid, u.name FROM {users} u LEFT JOIN {acl_user} aclu ON aclu.uid = u.uid WHERE acl_id = %d", $acl_id);
+    while ($user = db_fetch_object($result)) {
+      $users[$user->uid] = $user->name;
+    }
   }
-  if (!$label) {
-    $label = $acl_name;
+  if (!isset($label)) {
+    $label = (empty($acl_name) ? $acl_id : $acl_name);
   }
 
   $form = array(
@@ -65,13 +73,6 @@ function acl_edit_form($acl_id, $label = NULL) {
     '#collapsible' => true, 
     '#title' => $label,
     '#tree' => true);
-
-
-  $result = db_query("SELECT u.uid, u.name FROM {users} u LEFT JOIN {acl_user} aclu ON aclu.uid = u.uid WHERE acl_id = %d", $acl_id);
-  $users = array();
-  while ($user = db_fetch_object($result)) {
-    $users[$user->uid] = $user->name;
-  }
 
   $form['acl_id'] = array('#type' => 'value', '#value' => $acl_id);
 

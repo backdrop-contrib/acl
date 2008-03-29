@@ -2,6 +2,7 @@ CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
   Porting to D6:
+    - #229451: Allow acl_edit_form() without pre-created acl_id.    
     - Implement hook_user('delete') and remove orphaned {acl_user} records.
     - #232413: Fix error message when removing the last moderator.
     - #231096: Implement hook_nodeapi('delete') and remove orphaned {acl_node} records.
