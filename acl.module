@@ -165,9 +165,9 @@ function acl_edit_form_after_build($form, $form_values) {
 /**
  * Provide access control to a node based upon an ACL id. 
  */
-function acl_node_add_acl($nid, $acl_id, $view, $update, $delete) {
+function acl_node_add_acl($nid, $acl_id, $view, $update, $delete, $priority = 0) {
   db_query("DELETE FROM {acl_node} WHERE acl_id = %d AND nid = %d", $acl_id, $nid);
-  db_query("INSERT INTO {acl_node} (acl_id, nid, grant_view, grant_update, grant_delete) VALUES (%d, %d, %d, %d, %d)", $acl_id, $nid, $view, $update, $delete);
+  db_query("INSERT INTO {acl_node} (acl_id, nid, grant_view, grant_update, grant_delete, priority) VALUES (%d, %d, %d, %d, %d, %d)", $acl_id, $nid, $view, $update, $delete, $priority);
 }
 
 /**

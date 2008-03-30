@@ -80,6 +80,12 @@ function acl_schema() {
         'size'        => 'tiny',
         'unsigned'    => TRUE,
         'not null'    => TRUE, 
+        'default'     => 0),
+      'priority'      => array(
+        'description' => t('The priority of this grant record (for hook_node_access_records()).'),
+        'type'        => 'int', 
+        'size'        => 'small',
+        'not null'    => TRUE, 
         'default'     => 0)),
     'primary key'     => array('acl_id', 'nid'),
     'indexes'         => array(
@@ -129,5 +135,14 @@ function acl_update_4() {
 function acl_update_5() {
   $ret = array();
   db_query("DELETE FROM {acl_user} WHERE uid NOT IN (SELECT uid FROM {users})");
+  return $ret;
+}
+
+/**
+ * Add 'priority' column.
+ */
+function acl_update_6() {
+  $ret = array();
+  db_add_field($ret, 'acl_node', 'priority', array('type' => 'int', 'size' => 'small', 'not null' => TRUE, 'default' => 0));
   return $ret;
 }
