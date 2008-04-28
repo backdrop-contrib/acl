@@ -277,14 +277,23 @@ function acl_node_access_explain($row) {
   static $interpretations = array();
   if ($row->realm == 'acl') {
     if (!isset($interpretations[$row->gid])) {
-      $acl = db_fetch_object(db_query("SELECT * from {acl} WHERE acl_id = %d", $row->gid));
-      $interpretations[$row->gid] = $acl->module .'/'. $acl->name;
+      $acl = db_fetch_object(db_query("SELECT * FROM {acl} WHERE acl_id = %d", $row->gid));
       $result = db_query("SELECT u.name FROM {acl_user} au, {users} u WHERE au.acl_id = %d AND au.uid = u.uid", $row->gid);
       while ($user = db_fetch_object($result)) {
         $users[] = $user->name;
       }
       if (isset($users)) {
-        $interpretations[$row->gid] .= ': '. implode(', ', $users);
+        $interpretations[$row->gid] = $acl->module .'/'. $acl->name .': '. implode(', ', $users);
+      }
+      elseif ($row->gid == 0) {
+        $result = db_query("SELECT an.acl_id, a.module, a.name FROM {acl_node} an JOIN {acl} a ON an.acl_id = a.acl_id LEFT JOIN {acl_user} au ON a.acl_id = au.acl_id WHERE an.nid = %d AND au.uid IS NULL", $row->nid);
+        while ($acl = db_fetch_object($result)) {
+          $rows[] = $acl->acl_id .':&nbsp;'. $acl->module .'/'. $acl->name;
+        }
+        if (!empty($rows)) {
+          return implode('<br />', $rows);
+        }
+        return 'No access via ACL.';
       }
       else {
         $interpretations[$row->gid] .= ': no users!';
