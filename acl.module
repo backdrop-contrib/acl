@@ -1,9 +1,9 @@
 <?php
 // $Id$
 
-/** 
+/**
  * @file acl.module
- * 
+ *
  * This module handles ACLs on behalf of other modules. The two main reasons
  * to do this are so that modules using ACLs can share them with each
  * other without having to actually know much about them, and so that
@@ -49,7 +49,7 @@ function acl_remove_user($acl_id, $uid) {
 
 /**
  * Provide a form to edit the ACL that can be embedded in other forms.
- * Pass $new_acl=TRUE if you have no ACL yet, but do supply a string 
+ * Pass $new_acl=TRUE if you have no ACL yet, but do supply a string
  * like 'my_module_new_acl' as $acl_id anyway.
  */
 function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
@@ -69,8 +69,8 @@ function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   }
 
   $form = array(
-    '#type' => 'fieldset', 
-    '#collapsible' => true, 
+    '#type' => 'fieldset',
+    '#collapsible' => true,
     '#title' => $label,
     '#tree' => true);
 
@@ -84,11 +84,11 @@ function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   );
 
   $form['add'] = array(
-    '#type' => 'textfield', 
-    '#title' => t('Add user'), 
-    '#maxlength' => 60, 
+    '#type' => 'textfield',
+    '#title' => t('Add user'),
+    '#maxlength' => 60,
     '#size' => 40,
-    '#autocomplete_path' => 'user/autocomplete', 
+    '#autocomplete_path' => 'user/autocomplete',
   );
   $form['add_button'] = array(
     '#type' => 'button',
@@ -163,7 +163,7 @@ function acl_edit_form_after_build($form, $form_values) {
 
 
 /**
- * Provide access control to a node based upon an ACL id. 
+ * Provide access control to a node based upon an ACL id.
  */
 function acl_node_add_acl($nid, $acl_id, $view, $update, $delete, $priority = 0) {
   db_query("DELETE FROM {acl_node} WHERE acl_id = %d AND nid = %d", $acl_id, $nid);
@@ -223,11 +223,11 @@ function acl_node_access_records($node) {
       else {
         //just deny access
         $grants[] = array(
-          'realm' => 'acl', 
-          'gid' => 0, 
-          'grant_view' => 0, 
-          'grant_update' => 0, 
-          'grant_delete' => 0, 
+          'realm' => 'acl',
+          'gid' => 0,
+          'grant_view' => 0,
+          'grant_update' => 0,
+          'grant_delete' => 0,
           'priority' => 0,
         );
       }

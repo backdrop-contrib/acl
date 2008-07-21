@@ -3,8 +3,8 @@
 
 
 /**
-* Implementation of hook_install().
-*/
+ * Implementation of hook_install().
+ */
 function acl_install() {
   drupal_install_schema('acl');
 }
@@ -18,7 +18,7 @@ function acl_schema() {
     'fields'          => array(
       'acl_id'        => array(
         'description' => t('Primary key: unique ACL ID.'),
-        'type'        => 'serial', 
+        'type'        => 'serial',
         'not null'    => TRUE),
       'module'        => array(
         'description' => t('The name of the module that created this ACL entry.'),
@@ -35,13 +35,13 @@ function acl_schema() {
     'fields'          => array(
       'acl_id'        => array(
         'description' => t('The {acl}.acl_id of the entry.'),
-        'type'        => 'int', 
-        'not null'    => TRUE, 
+        'type'        => 'int',
+        'not null'    => TRUE,
         'default'     => 0),
       'uid'           => array(
         'description' => t('The {user}.uid to which this {acl} entry applies.'),
-        'type'        => 'int', 
-        'not null'    => TRUE, 
+        'type'        => 'int',
+        'not null'    => TRUE,
         'default'     => 0)),
     'primary key'     => array('acl_id', 'uid'),
     'indexes'         => array(
@@ -52,40 +52,40 @@ function acl_schema() {
     'fields'          => array(
       'acl_id'        => array(
         'description' => t('The {acl}.acl_id of the entry.'),
-        'type'        => 'int', 
-        'not null'    => TRUE, 
+        'type'        => 'int',
+        'not null'    => TRUE,
         'default'     => 0),
       'nid'           => array(
         'description' => t('The {node}.nid to grant permissions for.'),
-        'type'        => 'int', 
-        'not null'    => TRUE, 
+        'type'        => 'int',
+        'not null'    => TRUE,
         'default'     => 0),
       'grant_view'    => array(
         'description' => t('Whether to grant "view" permission.'),
-        'type'        => 'int', 
+        'type'        => 'int',
         'size'        => 'tiny',
         'unsigned'    => TRUE,
-        'not null'    => TRUE, 
+        'not null'    => TRUE,
         'default'     => 0),
       'grant_update'  => array(
         'description' => t('Whether to grant "update" permission.'),
-        'type'        => 'int', 
+        'type'        => 'int',
         'size'        => 'tiny',
         'unsigned'    => TRUE,
-        'not null'    => TRUE, 
+        'not null'    => TRUE,
         'default'     => 0),
       'grant_delete'  => array(
         'description' => t('Whether to grant "delete" permission.'),
-        'type'        => 'int', 
+        'type'        => 'int',
         'size'        => 'tiny',
         'unsigned'    => TRUE,
-        'not null'    => TRUE, 
+        'not null'    => TRUE,
         'default'     => 0),
       'priority'      => array(
         'description' => t('The priority of this grant record (for hook_node_access_records()).'),
-        'type'        => 'int', 
+        'type'        => 'int',
         'size'        => 'small',
-        'not null'    => TRUE, 
+        'not null'    => TRUE,
         'default'     => 0)),
     'primary key'     => array('acl_id', 'nid'),
     'indexes'         => array(

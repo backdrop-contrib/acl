@@ -2,6 +2,7 @@ CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
   Porting to D6:
+    - Fix cosmetic coder issues (no functional change).
     - #243073: Add Swedish translation.
     - Improve hook_node_access_explain().
     - #135687: Implement grant priority.
