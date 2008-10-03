@@ -70,15 +70,17 @@ function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
 
   $form = array(
     '#type' => 'fieldset',
-    '#collapsible' => true,
+    '#collapsible' => TRUE,
     '#title' => $label,
-    '#tree' => true);
+    '#tree' => TRUE,
+  );
 
   $form['acl_id'] = array('#type' => 'value', '#value' => $acl_id);
 
   $form['deletions'] = array('#type' => 'checkboxes', '#options' => array()); // placeholder
   $form['delete_button'] = array(
     '#type' => 'button',
+    '#name' => 'acl_'. $acl_id,
     '#value' => t('Remove Checked'),
     '#submit' => FALSE,
   );
@@ -92,6 +94,7 @@ function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   );
   $form['add_button'] = array(
     '#type' => 'button',
+    '#name' => 'acl_'. $acl_id,
     '#value' => t('Add User'),
     '#submit' => FALSE,
   );
@@ -102,7 +105,7 @@ function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   );
 
   $form['#after_build'] = array('acl_edit_form_after_build');
-  
+
   return $form;
 }
 
@@ -120,26 +123,28 @@ function acl_save_form($form) {
 /**
  * Process a form that had our buttons on it.
  */
-function acl_edit_form_after_build($form, $form_values) {
-  // We can't use form_values because it's the entire structure
+function acl_edit_form_after_build($form, $form_state) {
+  // We can't use the form values because it's the entire structure
   // and we have no clue where our values actually are. That's
   // ok tho cause #value still works for us.
   $user_list = unserialize($form['user_list']['#value']);
-  if (isset($form['delete_button']['#post']['op']) && $form['delete_button']['#post']['op'] == $form['delete_button']['#value']) {
+  $button_name = 'acl_'. $form['acl_id']['#value'];
+
+  if (isset($form['#post'][$button_name]) && $form['#post'][$button_name] == $form['delete_button']['#value']) {
     $deletions = $form['deletions']['#value'];
     foreach ($deletions as $uid) {
       unset($user_list[$uid]);
       unset($form['deletions']['#value'][$uid]);
     }
   }
-  else if (isset($form['add_button']['#post']['op']) && $form['add_button']['#post']['op'] == $form['add_button']['#value']) {
-    $name = $form['add']['#value'];
-    $u = db_fetch_object(db_query("SELECT uid, name FROM {users} WHERE name = '%s'", $name));
-    if (!$u->uid) {
-      form_error($form['add'], "Invalid user.");
+  elseif (isset($form['#post'][$button_name]) && $form['#post'][$button_name] == $form['add_button']['#value']) {
+
+    $user = db_fetch_object(db_query("SELECT uid, name FROM {users} WHERE name = '%s'", $form['add']['#value']));
+    if (!$user || !$user->uid) {
+      form_error($form['add'], t("Invalid user specified."));
     }
     else {
-      $user_list[$u->uid] = $u->name;
+      $user_list[$user->uid] = $user->name;
       $form['add']['#value'] = NULL;
     }
   }
@@ -149,15 +154,13 @@ function acl_edit_form_after_build($form, $form_values) {
     $form['deletions']['#title'] = t("Current users");
     $form['deletions']['#options'] = $user_list;
     $form['deletions']['#value'] = array(); // don't carry value through.
-    // need $form_id and have no way to get it but from $_POST that
-    // I can find; and if we got here that variable's already been
-    // checked.
-    $form['deletions'] = form_builder($form_values['values']['form_id'], $form['deletions'], $form_values);
+    $form['deletions'] = form_builder(!empty($form['#post']) ? $form['#post']['form_id'] : 'acl_form', $form['deletions'], $form_state);
   }
   else {
     $form['delete_button']['#type'] = 'value';
   }
   $form['user_list']['#value'] = serialize($user_list);
+
   return $form;
 }
 
