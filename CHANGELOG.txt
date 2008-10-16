@@ -1,6 +1,8 @@
 CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
+
+acl 6.x-1.x-BETA1 (2008-10-14):
   Porting to D6:
     - Fix cosmetic coder issues (no functional change).
     - #243073: Add Swedish translation.
