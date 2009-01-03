@@ -23,7 +23,8 @@ function acl_schema() {
       'module'        => array(
         'description' => t('The name of the module that created this ACL entry.'),
         'type'        => 'varchar',
-        'length'      => 255),
+        'length'      => 255,
+        'not null'    => TRUE),
       'name'          => array(
         'description' => t('A name (or other identifying information) for this ACL entry, given by the module that created it.'),
         'type'        => 'varchar',
@@ -144,5 +145,17 @@ function acl_update_5() {
 function acl_update_6() {
   $ret = array();
   db_add_field($ret, 'acl_node', 'priority', array('type' => 'int', 'size' => 'small', 'not null' => TRUE, 'default' => 0));
+  return $ret;
+}
+
+/**
+ * Change acl_id to auto-increment.
+ */
+function acl_update_6000() {
+  $ret = array();
+  db_change_field($ret, 'acl', 'acl_id', 'acl_id', array('type' => 'serial', 'not null' => TRUE));
+  // (Dropping and recreating the primary key on an auto_increment column would cause a MySQL failure.)
+  db_change_field($ret, 'acl', 'module', 'module', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE));
+  db_change_field($ret, 'acl', 'name', 'name', array('type' => 'varchar', 'length' => 255));
   return $ret;
 }

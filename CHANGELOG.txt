@@ -2,6 +2,10 @@ CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
 
+acl 6.x-1.x-BETA3 (2009-01-03):
+  Bugs fixed:
+    - Fix upgrade path from D5 (change acl_id column to auto_increment).
+
 acl 6.x-1.x-BETA2 (2008-10-14):
   Bugs fixed:
     - #205012, by fago: Fixed the acl form to work correctly when integrated more than once into a form.
