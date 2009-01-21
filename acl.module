@@ -209,6 +209,18 @@ function acl_has_users($acl_id) {
 }
 
 /**
+ * Gets the uids of an acl
+ */
+function acl_get_uids($acl_id) {
+  $result = db_query("SELECT uid FROM {acl_user} WHERE acl_id = '%d'", $acl_id);
+  $return = array();
+  while ($row = db_fetch_object($result)) {
+    $return[$row->uid] = $row->uid;
+  }
+  return (empty($return) ? NULL : $return);
+}
+
+/**
  * Implementation of hook_node_access_grants (from node_access)
  */
 function acl_node_access_records($node) {
