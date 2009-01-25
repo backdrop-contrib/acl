@@ -2,6 +2,7 @@ CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
   Enhancements:
+    - Enable grant priority.
     - Add new acl_get_uids() function.
 
 acl 6.x-1.x-BETA3 (2009-01-03):

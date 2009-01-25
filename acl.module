@@ -112,11 +112,14 @@ function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
 /**
  * Write the results of a form.
  */
-function acl_save_form($form) {
+function acl_save_form($form, $priority = NULL) {
   $users = unserialize($form['user_list']);
   db_query('DELETE FROM {acl_user} WHERE acl_id = %d', $form['acl_id']);
   foreach ($users as $uid => $name) {
     db_query('INSERT INTO {acl_user} (acl_id, uid) VALUES (%d, %d)', $form['acl_id'], $uid);
+  }
+  if (isset($priority)) {
+    db_query('UPDATE {acl_node} SET priority = %d where acl_id = %d', $priority, $form['acl_id']);
   }
 }
 
@@ -221,7 +224,7 @@ function acl_get_uids($acl_id) {
 }
 
 /**
- * Implementation of hook_node_access_grants (from node_access)
+ * Implementation of hook_node_access_records().
  */
 function acl_node_access_records($node) {
   if (!$node->nid) {
@@ -232,7 +235,6 @@ function acl_node_access_records($node) {
   while ($grant = db_fetch_array($result)) {
     if (module_exists($grant['module']) && module_invoke($grant['module'], 'enabled')) {
       if (acl_has_users($grant['gid'])) {
-        $grant['priority'] = 0;
         $grants[] = $grant;
       }
       else {
@@ -252,7 +254,7 @@ function acl_node_access_records($node) {
 }
 
 /**
- * Implementation of hook_node_grants
+ * Implementation of hook_node_grants().
  */
 function acl_node_grants($account, $op) {
   $array = array('acl' => array());
