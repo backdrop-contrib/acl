@@ -2,17 +2,14 @@
 // $Id$
 
 /**
- * @file forum_access.admin.inc
+ * @file acl.admin.inc
  *
- * Include file for forum_access.module, containing (sub-)page handling
- * (form_alter) and batch code.
+ * Include file for acl.module, containing (sub-)page handling code.
  *
  */
 
 /**
- * Provide a form to edit the ACL that can be embedded in other forms.
- * Pass $new_acl=TRUE if you have no ACL yet, but do supply a string
- * like 'my_module_new_acl' as $acl_id anyway.
+ * Implementation of acl_edit_form().
  */
 function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   $users = array();
@@ -116,7 +113,9 @@ function _acl_edit_form_after_build($form, $form_state) {
 }
 
 /**
- * Write the results of a form.
+ * Write the results of a form. 
+ * 
+ * The module that embedded our form must call this function!
  */
 function acl_save_form($form, $priority = NULL) {
   $users = unserialize($form['user_list']);
