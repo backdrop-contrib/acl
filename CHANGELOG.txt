@@ -1,6 +1,9 @@
 CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
+
+
+acl 6.x-1.x-BETA4 (2009-01-29):
   Enhancements:
     - Factor out form code into .inc file.
     - Enable grant priority.
