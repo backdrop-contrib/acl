@@ -132,7 +132,7 @@ function acl_node_access_records($node) {
           'grant_view' => 0,
           'grant_update' => 0,
           'grant_delete' => 0,
-          'priority' => 0,
+          'priority' => $grant['priority'],
         );
       }
     }

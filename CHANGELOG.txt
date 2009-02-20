@@ -3,6 +3,8 @@ CHANGELOG for ACL for Drupal 6
 acl 6.x-1.x-dev:
   Enhancements:
     - #369918: Add German translation.
+  Bugs fixed:
+    - #371446: Use priority for the 'deny' grant, too.
 
 acl 6.x-1.x-BETA4 (2009-01-29):
   Enhancements:
