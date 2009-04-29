@@ -1,6 +1,9 @@
 CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
+
+
+acl 6.x-1.x-RC1 (2009-04-29):
   Enhancements:
     - #369918: Add German translation.
   Bugs fixed:
