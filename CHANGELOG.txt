@@ -1,7 +1,8 @@
 CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
-
+  Enhancements:
+    - #243073: Update Swedish translation and add .pot file.
 
 acl 6.x-1.x-RC1 (2009-04-29):
   Enhancements:
