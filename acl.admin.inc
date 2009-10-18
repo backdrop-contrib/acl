@@ -2,10 +2,8 @@
 // $Id$
 
 /**
- * @file acl.admin.inc
- *
- * Include file for acl.module, containing (sub-)page handling code.
- *
+ * @file
+ * Implementations of administration functions for the acl module.
  */
 
 /**
@@ -113,8 +111,8 @@ function _acl_edit_form_after_build($form, $form_state) {
 }
 
 /**
- * Write the results of a form. 
- * 
+ * Write the results of a form.
+ *
  * The module that embedded our form must call this function!
  */
 function acl_save_form($form, $priority = NULL) {

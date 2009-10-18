@@ -1,6 +1,10 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Install, update and uninstall functions for the acl module.
+ */
 
 /**
  * Implementation of hook_install().
@@ -97,7 +101,7 @@ function acl_schema() {
 
 
 /*
- * Implementation of hook_uninstall
+ * Implementation of hook_uninstall().
  */
 function acl_uninstall() {
   drupal_uninstall_schema('acl');
@@ -126,7 +130,7 @@ function acl_update_2() {
 function acl_update_4() {
   $ret = array();
   db_add_index($ret, 'acl_node', 'nid', array('nid'));
-  db_query("DELETE FROM {acl_node} WHERE nid NOT IN (SELECT nid FROM {node})");
+  $ret[] = update_sql("DELETE FROM {acl_node} WHERE nid NOT IN (SELECT nid FROM {node})");
   return $ret;
 }
 
@@ -135,7 +139,7 @@ function acl_update_4() {
  */
 function acl_update_5() {
   $ret = array();
-  db_query("DELETE FROM {acl_user} WHERE uid NOT IN (SELECT uid FROM {users})");
+  $ret[] = update_sql("DELETE FROM {acl_user} WHERE uid NOT IN (SELECT uid FROM {users})");
   return $ret;
 }
 
