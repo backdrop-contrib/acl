@@ -161,5 +161,16 @@ function acl_update_6000() {
   // (Dropping and recreating the primary key on an auto_increment column would cause a MySQL failure.)
   db_change_field($ret, 'acl', 'module', 'module', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE));
   db_change_field($ret, 'acl', 'name', 'name', array('type' => 'varchar', 'length' => 255));
+  db_add_index($ret, 'acl_node', 'nid', array('nid'));
   return $ret;
 }
+
+/**
+ * Add index that should have been added when upgrading from D5.
+ */
+function acl_update_6001() {
+  $ret = array();
+  db_add_index($ret, 'acl_node', 'nid', array('nid'));
+  return array();  // ignore possible error, if the index already exists
+}
+
