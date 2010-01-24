@@ -1,6 +1,9 @@
 CHANGELOG for ACL for Drupal 6
 
 acl 6.x-1.x-dev:
+
+
+acl 6.x-1.1 (2010-01-24):
   Bugs fixed:
     - #680324: Add missing index if upgraded from D5.
   Enhancements:
