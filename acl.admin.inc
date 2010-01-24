@@ -32,12 +32,18 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
     '#tree' => TRUE,
   );
 
-  $form['acl_id'] = array('#type' => 'value', '#value' => $acl_id);
+  $form['acl_id'] = array(
+    '#type' => 'value',
+    '#value' => $acl_id,
+  );
 
-  $form['deletions'] = array('#type' => 'checkboxes', '#options' => array()); // placeholder
+  $form['deletions'] = array(
+    '#type' => 'checkboxes',
+    '#options' => array(),
+  ); // placeholder
   $form['delete_button'] = array(
     '#type' => 'button',
-    '#name' => 'acl_'. $acl_id,
+    '#name' => 'acl_' . $acl_id,
     '#value' => t('Remove Checked'),
     '#submit' => FALSE,
   );
@@ -51,7 +57,7 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   );
   $form['add_button'] = array(
     '#type' => 'button',
-    '#name' => 'acl_'. $acl_id,
+    '#name' => 'acl_' . $acl_id,
     '#value' => t('Add User'),
     '#submit' => FALSE,
   );
@@ -74,7 +80,7 @@ function _acl_edit_form_after_build($form, $form_state) {
   // and we have no clue where our values actually are. That's
   // ok tho cause #value still works for us.
   $user_list = unserialize($form['user_list']['#value']);
-  $button_name = 'acl_'. $form['acl_id']['#value'];
+  $button_name = 'acl_' . $form['acl_id']['#value'];
 
   if (isset($form['#post'][$button_name]) && $form['#post'][$button_name] == $form['delete_button']['#value']) {
     $deletions = $form['deletions']['#value'];

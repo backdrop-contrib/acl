@@ -1,6 +1,8 @@
-CHANGELOG for ACL for Drupal 6
+CHANGELOG for ACL for Drupal 7
 
-acl 6.x-1.x-dev:
+acl 7.x-1.x-dev:
+  Enhancements:
+    - Start port to D7: use 6.x-1.1 and fix the applicable Coder errors.
 
 
 acl 6.x-1.1 (2010-01-24):

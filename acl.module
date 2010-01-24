@@ -15,7 +15,10 @@
  * Create a new ACL.
  */
 function acl_create_new_acl($module, $name) {
-  $acl = array('module' => $module, 'name' => $name);
+  $acl = array(
+    'module' => $module,
+    'name' => $name,
+  );
   drupal_write_record('acl', $acl);
   return $acl['acl_id'];
 }
@@ -80,7 +83,7 @@ function acl_node_clear_acls($nid, $module) {
     $acls[] = $o->acl_id;
   }
   if ($acls) {
-    db_query("DELETE FROM {acl_node} WHERE nid = %d AND acl_id IN (". db_placeholders($acls) .")", array_merge(array($nid), $acls));
+    db_query("DELETE FROM {acl_node} WHERE nid = %d AND acl_id IN (" . db_placeholders($acls) . ")", array_merge(array($nid), $acls));
   }
 }
 
@@ -120,7 +123,7 @@ function acl_node_access_records($node) {
   $result = db_query("SELECT n.*, 'acl' AS realm, n.acl_id AS gid, a.module FROM {acl_node} n INNER JOIN {acl} a ON n.acl_id = a.acl_id WHERE nid = %d", $node->nid);
   $grants = array();
   while ($grant = db_fetch_array($result)) {
-    if (module_exists($grant['module']) && module_invoke($grant['module'], 'enabled')) {
+    if (module_invoke($grant['module'], 'enabled')) {
       if (acl_has_users($grant['gid'])) {
         $grants[] = $grant;
       }
@@ -144,7 +147,9 @@ function acl_node_access_records($node) {
  * Implementation of hook_node_grants().
  */
 function acl_node_grants($account, $op) {
-  $array = array('acl' => array());
+  $array = array(
+    'acl' => array(),
+  );
   $result = db_query("SELECT acl_id FROM {acl_user} WHERE uid = %d", $account->uid);
   while ($row = db_fetch_object($result)) {
     $array['acl'][] = $row->acl_id;
@@ -153,25 +158,17 @@ function acl_node_grants($account, $op) {
 }
 
 /**
- * Implementation of hook_nodeapi().
+ * Implementation of hook_node_delete().
  */
-function acl_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
-  switch ($op) {
-    case 'delete':
-      db_query("DELETE FROM {acl_node} WHERE nid = %d", $node->nid);
-      break;
-  }
+function acl_node_delete($node) {
+  db_query("DELETE FROM {acl_node} WHERE nid = %d", $node->nid);
 }
 
 /**
- * Implementation of hook_user().
+ * Implementation of hook_user_cancel().
  */
-function acl_user($op, &$edit, &$account, $category = NULL) {
-  switch ($op) {
-    case 'delete':
-      db_query("DELETE FROM {acl_user} WHERE uid = %d", $account->uid);
-      break;
-  }
+function acl_user_cancel($edit, $account, $method) {
+  db_query("DELETE FROM {acl_user} WHERE uid = %d", $account->uid);
 }
 
 /**
@@ -187,12 +184,12 @@ function acl_node_access_explain($row) {
         $users[] = $user->name;
       }
       if (isset($users)) {
-        $interpretations[$row->gid] = $acl->module .'/'. $acl->name .': '. implode(', ', $users);
+        $interpretations[$row->gid] = $acl->module . '/' . $acl->name . ': ' . implode(', ', $users);
       }
       elseif ($row->gid == 0) {
         $result = db_query("SELECT an.acl_id, a.module, a.name FROM {acl_node} an JOIN {acl} a ON an.acl_id = a.acl_id LEFT JOIN {acl_user} au ON a.acl_id = au.acl_id WHERE an.nid = %d AND au.uid IS NULL", $row->nid);
         while ($acl = db_fetch_object($result)) {
-          $rows[] = $acl->acl_id .':&nbsp;'. $acl->module .'/'. $acl->name;
+          $rows[] = $acl->acl_id . ':&nbsp;' . $acl->module . '/' . $acl->name;
         }
         if (!empty($rows)) {
           return implode('<br />', $rows);
