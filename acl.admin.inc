@@ -13,11 +13,14 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   $users = array();
   if (!$new_acl) {
     // Ensure the ACL in question even exists.
-    if (!$acl_name = db_result(db_query("SELECT name FROM {acl} WHERE acl_id = %d", $acl_id))) {
+    if (!$acl_name = db_result(db_query("SELECT name FROM {acl} WHERE acl_id = :acl_id", array(
+      'acl_id' => $acl_id,
+    )))) {
       return array();
     }
-    $result = db_query("SELECT u.uid, u.name FROM {users} u LEFT JOIN {acl_user} aclu ON aclu.uid = u.uid WHERE acl_id = %d", $acl_id);
-    while ($user = db_fetch_object($result)) {
+    $result = db_query("SELECT u.uid, u.name FROM {users} u LEFT JOIN {acl_user} aclu ON aclu.uid = u.uid WHERE acl_id = :acl_id", array(
+      'acl_id' => $acl_id));
+    foreach ($result as $user) {
       $users[$user->uid] = $user->name;
     }
   }
@@ -91,7 +94,9 @@ function _acl_edit_form_after_build($form, $form_state) {
   }
   elseif (isset($form['#post'][$button_name]) && $form['#post'][$button_name] == $form['add_button']['#value']) {
 
-    $user = db_fetch_object(db_query("SELECT uid, name FROM {users} WHERE name = '%s'", $form['add']['#value']));
+    $user = db_query("SELECT uid, name FROM {users} WHERE name = :name", array(
+      'name' => $form['add']['#value'],
+    ))->fetchObject();
     if (!$user || !$user->uid) {
       form_error($form['add'], t("Invalid user specified."));
     }
@@ -123,12 +128,24 @@ function _acl_edit_form_after_build($form, $form_state) {
  */
 function acl_save_form($form, $priority = NULL) {
   $users = unserialize($form['user_list']);
-  db_query('DELETE FROM {acl_user} WHERE acl_id = %d', $form['acl_id']);
+  db_delete('acl_user')
+    ->condition('acl_id', $form['acl_id'])
+    ->execute();
   foreach ($users as $uid => $name) {
-    db_query('INSERT INTO {acl_user} (acl_id, uid) VALUES (%d, %d)', $form['acl_id'], $uid);
+    db_insert('')
+    ->fields(array(
+      'acl_id' => $form['acl_id'],
+      'uid' => $uid,
+    ))
+    ->execute();
   }
   if (isset($priority)) {
-    db_query('UPDATE {acl_node} SET priority = %d where acl_id = %d', $priority, $form['acl_id']);
+    db_update('acl_node')
+      ->fields(array(
+        'priority' => $priority,
+      ))
+      ->condition('acl_id', $form['acl_id'])
+      ->execute();
   }
 }
 

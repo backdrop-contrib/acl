@@ -27,18 +27,32 @@ function acl_create_new_acl($module, $name) {
  * Delete an existing ACL.
  */
 function acl_delete_acl($acl_id) {
-  db_query("DELETE FROM {acl} WHERE acl_id = %d", $acl_id);
-  db_query("DELETE FROM {acl_user} WHERE acl_id = %d", $acl_id);
-  db_query("DELETE FROM {acl_node} WHERE acl_id = %d", $acl_id);
+  db_delete('acl')
+    ->condition('acl_id', $acl_id)
+    ->execute();
+  db_delete('acl_user')
+    ->condition('acl_id', $acl_id)
+    ->execute();
+  db_delete('acl_node')
+    ->condition('acl_id', $acl_id)
+    ->execute();
 }
 
 /**
  * Add the specified UID to an ACL.
  */
 function acl_add_user($acl_id, $uid) {
-  $test_uid = db_result(db_query("SELECT uid FROM {acl_user} WHERE acl_id = %d AND uid = %d ", $acl_id, $uid));
+  $test_uid = db_result(db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
+    'acl_id' => $acl_id, 
+    'uid' => $uid,
+  )));
   if (!$test_uid) {
-    db_query("INSERT INTO {acl_user} (acl_id, uid) VALUES (%d, %d)", $acl_id, $uid);
+    db_insert('acl_user')
+    ->fields(array(
+      'acl_id' => $acl_id,
+      'uid' => $uid,
+    ))
+    ->execute();
   }
 }
 
@@ -46,7 +60,10 @@ function acl_add_user($acl_id, $uid) {
  * Remove the specified UID from an ACL.
  */
 function acl_remove_user($acl_id, $uid) {
-  db_query("DELETE FROM {acl_user} WHERE acl_id = %d AND uid = %d ", $acl_id, $uid);
+  db_delete('acl_user')
+    ->condition('acl_id', $acl_id)
+    ->condition('uid', $uid)
+    ->execute();
 }
 
 /**
@@ -63,27 +80,47 @@ function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
  * Provide access control to a node based upon an ACL id.
  */
 function acl_node_add_acl($nid, $acl_id, $view, $update, $delete, $priority = 0) {
-  db_query("DELETE FROM {acl_node} WHERE acl_id = %d AND nid = %d", $acl_id, $nid);
-  db_query("INSERT INTO {acl_node} (acl_id, nid, grant_view, grant_update, grant_delete, priority) VALUES (%d, %d, %d, %d, %d, %d)", $acl_id, $nid, $view, $update, $delete, $priority);
+  db_delete('acl_node')
+    ->condition('acl_id', $acl_id)
+    ->condition('nid', $nid)
+    ->execute();
+  db_insert('acl_node')
+  ->fields(array(
+    'acl_id' => $acl_id,
+    'nid' => $nid,
+    'grant_view' => $view,
+    'grant_update' => $update,
+    'grant_delete' => $delete,
+    'priority' => $priority,
+  ))
+  ->execute();
 }
 
 /**
  * Remove an ACL completely from a node.
  */
 function acl_node_remove_acl($nid, $acl_id) {
-  db_query("DELETE FROM {acl_node} WHERE acl_id = %d AND nid = %d", $acl_id, $nid);
+  db_delete('acl_node')
+    ->condition('acl_id', $acl_id)
+    ->condition('nid', $nid)
+    ->execute();
 }
 
 /**
  * Clear all of a module's ACL's from a node.
  */
 function acl_node_clear_acls($nid, $module) {
-  $result = db_query("SELECT acl_id FROM {acl} WHERE module = '%s'", $module);
-  while ($o = db_fetch_object($result)) {
-    $acls[] = $o->acl_id;
+  $result = db_query("SELECT acl_id FROM {acl} WHERE module = :module", array(
+    'module' => $module
+  ));
+  foreach ($result as $acl) {
+    $acls[] = $acl->acl_id;
   }
   if ($acls) {
-    db_query("DELETE FROM {acl_node} WHERE nid = %d AND acl_id IN (" . db_placeholders($acls) . ")", array_merge(array($nid), $acls));
+    db_delete('acl_node')
+      ->condition('nid', $nid)
+      ->condition('acl_id', $acls, 'IN')
+      ->execute();
   }
 }
 
@@ -91,23 +128,30 @@ function acl_node_clear_acls($nid, $module) {
  * Gets the id of an acl
  */
 function acl_get_id_by_name($module, $name) {
-  return db_result(db_query("SELECT acl_id FROM {acl} WHERE module = '%s' AND name = '%s'", $module, $name));
+  return db_result(db_query("SELECT acl_id FROM {acl} WHERE module = :module AND name = :name", array(
+    'module' => $module,
+    'name' => $name,
+  )));
 }
 
 /**
  * Determines if an acl has some assigned users
  */
 function acl_has_users($acl_id) {
-  return db_result(db_query("SELECT COUNT(aclu.uid) FROM {acl_user} aclu WHERE acl_id = %d", $acl_id));
+  return db_result(db_query("SELECT COUNT(aclu.uid) FROM {acl_user} aclu WHERE acl_id = :acl_id", array(
+    'acl_id' => $acl_id,
+  )));
 }
 
 /**
  * Gets the uids of an acl
  */
 function acl_get_uids($acl_id) {
-  $result = db_query("SELECT uid FROM {acl_user} WHERE acl_id = '%d'", $acl_id);
+  $result = db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id", array(
+    'acl_id' => $acl_id,
+  ));
   $return = array();
-  while ($row = db_fetch_object($result)) {
+  foreach ($result as $row) {
     $return[$row->uid] = $row->uid;
   }
   return (empty($return) ? NULL : $return);
@@ -120,7 +164,9 @@ function acl_node_access_records($node) {
   if (!$node->nid) {
     return;
   }
-  $result = db_query("SELECT n.*, 'acl' AS realm, n.acl_id AS gid, a.module FROM {acl_node} n INNER JOIN {acl} a ON n.acl_id = a.acl_id WHERE nid = %d", $node->nid);
+  $result = db_query("SELECT n.*, 'acl' AS realm, n.acl_id AS gid, a.module FROM {acl_node} n INNER JOIN {acl} a ON n.acl_id = a.acl_id WHERE nid = :nid", array(
+    'nid' => $node->nid,
+  ));
   $grants = array();
   while ($grant = db_fetch_array($result)) {
     if (module_invoke($grant['module'], 'enabled')) {
@@ -150,8 +196,10 @@ function acl_node_grants($account, $op) {
   $array = array(
     'acl' => array(),
   );
-  $result = db_query("SELECT acl_id FROM {acl_user} WHERE uid = %d", $account->uid);
-  while ($row = db_fetch_object($result)) {
+  $result = db_query("SELECT acl_id FROM {acl_user} WHERE uid = :uid", array(
+    'uid' => $account->uid,
+  ));
+  foreach ($result as $row) {
     $array['acl'][] = $row->acl_id;
   }
   return !empty($array['acl']) ? $array : NULL;
@@ -161,14 +209,18 @@ function acl_node_grants($account, $op) {
  * Implementation of hook_node_delete().
  */
 function acl_node_delete($node) {
-  db_query("DELETE FROM {acl_node} WHERE nid = %d", $node->nid);
+  db_delete('acl_node')
+    ->condition('nid', $node->nid)
+    ->execute();
 }
 
 /**
  * Implementation of hook_user_cancel().
  */
 function acl_user_cancel($edit, $account, $method) {
-  db_query("DELETE FROM {acl_user} WHERE uid = %d", $account->uid);
+  db_delete('acl_user')
+    ->condition('uid', $account->uid)
+    ->execute();
 }
 
 /**
@@ -178,17 +230,23 @@ function acl_node_access_explain($row) {
   static $interpretations = array();
   if ($row->realm == 'acl') {
     if (!isset($interpretations[$row->gid])) {
-      $acl = db_fetch_object(db_query("SELECT * FROM {acl} WHERE acl_id = %d", $row->gid));
-      $result = db_query("SELECT u.name FROM {acl_user} au, {users} u WHERE au.acl_id = %d AND au.uid = u.uid", $row->gid);
-      while ($user = db_fetch_object($result)) {
+      $acl = db_query("SELECT * FROM {acl} WHERE acl_id = :acl_id", array(
+        'acl_id' => $row->gid,
+      ))->fetchObject();
+      $result = db_query("SELECT u.name FROM {acl_user} au, {users} u WHERE au.acl_id = :acl_id AND au.uid = u.uid", array(
+        'acl_id' => $row->gid,
+      ));
+      foreach ($result as $user) {
         $users[] = $user->name;
       }
       if (isset($users)) {
         $interpretations[$row->gid] = $acl->module . '/' . $acl->name . ': ' . implode(', ', $users);
       }
       elseif ($row->gid == 0) {
-        $result = db_query("SELECT an.acl_id, a.module, a.name FROM {acl_node} an JOIN {acl} a ON an.acl_id = a.acl_id LEFT JOIN {acl_user} au ON a.acl_id = au.acl_id WHERE an.nid = %d AND au.uid IS NULL", $row->nid);
-        while ($acl = db_fetch_object($result)) {
+        $result = db_query("SELECT an.acl_id, a.module, a.name FROM {acl_node} an JOIN {acl} a ON an.acl_id = a.acl_id LEFT JOIN {acl_user} au ON a.acl_id = au.acl_id WHERE an.nid = :nid AND au.uid IS NULL", array(
+          'nid' => $row->nid,
+        ));
+        foreach ($result as $acl) {
           $rows[] = $acl->acl_id . ':&nbsp;' . $acl->module . '/' . $acl->name;
         }
         if (!empty($rows)) {
