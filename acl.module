@@ -138,8 +138,18 @@ function acl_get_id_by_name($module, $name) {
  * Determines if an acl has some assigned users
  */
 function acl_has_users($acl_id) {
-  return db_result(db_query("SELECT COUNT(aclu.uid) FROM {acl_user} aclu WHERE acl_id = :acl_id", array(
+  return db_result(db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id", array(
     'acl_id' => $acl_id,
+  )));
+}
+
+/**
+ * Determines if an acl has a specific assigned user
+ */
+function acl_has_user($acl_id, $uid) {
+  return db_result(db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
+    'acl_id' => $acl_id,
+    'uid' => $uid,
   )));
 }
 
