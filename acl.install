@@ -7,13 +7,6 @@
  */
 
 /**
- * Implementation of hook_install().
- */
-function acl_install() {
-  drupal_install_schema('acl');
-}
-
-/**
  * Implementation of hook_schema().
  */
 function acl_schema() {
@@ -115,13 +108,6 @@ function acl_schema() {
   return $schema;
 }
 
-
-/*
- * Implementation of hook_uninstall().
- */
-function acl_uninstall() {
-  drupal_uninstall_schema('acl');
-}
 
 /**
  * Fixes primary keys
