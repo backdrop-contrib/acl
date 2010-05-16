@@ -4,6 +4,7 @@ acl 7.x-1.x-dev:
   Enhancements:
     - Add acl_has_user($acl_id, $uid) API function.
   Port to D7:
+    - #798106: Fix incomplete porting (db_query).
     - #761696: Simpletests: provide some dummy files.
     - #798108: Remove drupal_install_schema() and drupal_uninstall_schema() calls.
     - Port database statements.

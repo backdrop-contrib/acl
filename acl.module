@@ -42,10 +42,10 @@ function acl_delete_acl($acl_id) {
  * Add the specified UID to an ACL.
  */
 function acl_add_user($acl_id, $uid) {
-  $test_uid = db_result(db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
+  $test_uid = db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
     'acl_id' => $acl_id, 
     'uid' => $uid,
-  )));
+  ))->fetchField();
   if (!$test_uid) {
     db_insert('acl_user')
     ->fields(array(
@@ -128,29 +128,29 @@ function acl_node_clear_acls($nid, $module) {
  * Gets the id of an acl
  */
 function acl_get_id_by_name($module, $name) {
-  return db_result(db_query("SELECT acl_id FROM {acl} WHERE module = :module AND name = :name", array(
+  return db_query("SELECT acl_id FROM {acl} WHERE module = :module AND name = :name", array(
     'module' => $module,
     'name' => $name,
-  )));
+  ))->fetchField();
 }
 
 /**
  * Determines if an acl has some assigned users
  */
 function acl_has_users($acl_id) {
-  return db_result(db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id", array(
+  return db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id", array(
     'acl_id' => $acl_id,
-  )));
+  ))->fetchField();
 }
 
 /**
  * Determines if an acl has a specific assigned user
  */
 function acl_has_user($acl_id, $uid) {
-  return db_result(db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
+  return db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
     'acl_id' => $acl_id,
     'uid' => $uid,
-  )));
+  ))->fetchField();
 }
 
 /**
@@ -178,9 +178,9 @@ function acl_node_access_records($node) {
     'nid' => $node->nid,
   ));
   $grants = array();
-  while ($grant = db_fetch_array($result)) {
-    if (module_invoke($grant['module'], 'enabled')) {
-      if (acl_has_users($grant['gid'])) {
+  foreach ($result as $grant) {
+    if (module_invoke($grant->module, 'enabled')) {
+      if (acl_has_users($grant->gid)) {
         $grants[] = $grant;
       }
       else {
@@ -191,7 +191,7 @@ function acl_node_access_records($node) {
           'grant_view' => 0,
           'grant_update' => 0,
           'grant_delete' => 0,
-          'priority' => $grant['priority'],
+          'priority' => $grant->priority,
         );
       }
     }
