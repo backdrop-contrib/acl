@@ -43,7 +43,7 @@ function acl_delete_acl($acl_id) {
  */
 function acl_add_user($acl_id, $uid) {
   $test_uid = db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
-    'acl_id' => $acl_id, 
+    'acl_id' => $acl_id,
     'uid' => $uid,
   ))->fetchField();
   if (!$test_uid) {
@@ -88,9 +88,9 @@ function acl_node_add_acl($nid, $acl_id, $view, $update, $delete, $priority = 0)
   ->fields(array(
     'acl_id' => $acl_id,
     'nid' => $nid,
-    'grant_view' => $view,
-    'grant_update' => $update,
-    'grant_delete' => $delete,
+    'grant_view' => (int) $view,
+    'grant_update' => (int) $update,
+    'grant_delete' => (int) $delete,
     'priority' => $priority,
   ))
   ->execute();
