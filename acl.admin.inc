@@ -13,9 +13,9 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   $users = array();
   if (!$new_acl) {
     // Ensure the ACL in question even exists.
-    if (!$acl_name = db_result(db_query("SELECT name FROM {acl} WHERE acl_id = :acl_id", array(
+    if (!($acl_name = db_query("SELECT name FROM {acl} WHERE acl_id = :acl_id", array(
       'acl_id' => $acl_id,
-    )))) {
+    ))->fetchField())) {
       return array();
     }
     $result = db_query("SELECT u.uid, u.name FROM {users} u LEFT JOIN {acl_user} aclu ON aclu.uid = u.uid WHERE acl_id = :acl_id", array(
