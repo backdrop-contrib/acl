@@ -4,6 +4,7 @@ acl 7.x-1.x-dev:
   Enhancements:
     - Add acl_has_user($acl_id, $uid) API function.
   Port to D7:
+    - Fix line endings (no functional change).
     - #798106: Convert another left-over db_result() call.
     - #824642: Avoid type conversion problems when FALSE is passed rather than 0.
     - #798106: Fix incomplete porting (db_query).
