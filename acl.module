@@ -176,11 +176,11 @@ function acl_node_access_records($node) {
   }
   $result = db_query("SELECT n.*, 'acl' AS realm, n.acl_id AS gid, a.module FROM {acl_node} n INNER JOIN {acl} a ON n.acl_id = a.acl_id WHERE nid = :nid", array(
     'nid' => $node->nid,
-  ));
+  ), array('fetch' => PDO::FETCH_ASSOC));
   $grants = array();
   foreach ($result as $grant) {
-    if (module_invoke($grant->module, 'enabled')) {
-      if (acl_has_users($grant->gid)) {
+    if (module_invoke($grant['module'], 'enabled')) {
+      if (acl_has_users($grant['gid'])) {
         $grants[] = $grant;
       }
       else {
@@ -191,7 +191,7 @@ function acl_node_access_records($node) {
           'grant_view' => 0,
           'grant_update' => 0,
           'grant_delete' => 0,
-          'priority' => $grant->priority,
+          'priority' => $grant['priority'],
         );
       }
     }

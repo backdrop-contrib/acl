@@ -85,15 +85,14 @@ function _acl_edit_form_after_build($form, $form_state) {
   $user_list = unserialize($form['user_list']['#value']);
   $button_name = 'acl_' . $form['acl_id']['#value'];
 
-  if (isset($form['#post'][$button_name]) && $form['#post'][$button_name] == $form['delete_button']['#value']) {
+  if (isset($form_state['triggering_element']) && $form_state['triggering_element']['#value'] == $form['delete_button']['#value']) {
     $deletions = $form['deletions']['#value'];
     foreach ($deletions as $uid) {
       unset($user_list[$uid]);
       unset($form['deletions']['#value'][$uid]);
     }
   }
-  elseif (isset($form['#post'][$button_name]) && $form['#post'][$button_name] == $form['add_button']['#value']) {
-
+  elseif (isset($form_state['triggering_element']) && $form_state['triggering_element']['#value'] == $form['add_button']['#value'] && !empty($form['add']['#value'])) {
     $user = db_query("SELECT uid, name FROM {users} WHERE name = :name", array(
       'name' => $form['add']['#value'],
     ))->fetchObject();
@@ -132,7 +131,7 @@ function acl_save_form($form, $priority = NULL) {
     ->condition('acl_id', $form['acl_id'])
     ->execute();
   foreach ($users as $uid => $name) {
-    db_insert('')
+    db_insert('acl_user')
     ->fields(array(
       'acl_id' => $form['acl_id'],
       'uid' => $uid,
