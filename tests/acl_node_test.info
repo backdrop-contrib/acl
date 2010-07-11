@@ -5,3 +5,5 @@ package = Testing
 version = VERSION
 core = 7.x
 hidden = TRUE
+
+files[] = acl_node_test.module

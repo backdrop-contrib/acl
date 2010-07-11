@@ -2,6 +2,7 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.x-dev:
   Enhancements:
+    - #761696: Add tests (work in progress).
     - Add acl_has_user($acl_id, $uid) API function.
   Port to D7:
     - #836822: Fix some porting errors.
