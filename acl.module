@@ -187,7 +187,7 @@ function acl_node_access_records($node) {
         //just deny access
         $grants[] = array(
           'realm' => 'acl',
-          'gid' => 0,
+          'gid' => $grant['gid'],
           'grant_view' => 0,
           'grant_update' => 0,
           'grant_delete' => 0,
@@ -250,14 +250,14 @@ function acl_node_access_explain($row) {
         $users[] = $user->name;
       }
       if (isset($users)) {
-        $interpretations[$row->gid] = $acl->module . '/' . $acl->name . ': ' . implode(', ', $users);
+        $interpretations[$row->gid] = "$acl->module/$acl->name: " . implode(', ', $users);
       }
       elseif ($row->gid == 0) {
         $result = db_query("SELECT an.acl_id, a.module, a.name FROM {acl_node} an JOIN {acl} a ON an.acl_id = a.acl_id LEFT JOIN {acl_user} au ON a.acl_id = au.acl_id WHERE an.nid = :nid AND au.uid IS NULL", array(
           'nid' => $row->nid,
         ));
         foreach ($result as $acl) {
-          $rows[] = $acl->acl_id . ':&nbsp;' . $acl->module . '/' . $acl->name;
+          $rows[] = "$acl->acl_id:&nbsp;$acl->module/$acl->name";
         }
         if (!empty($rows)) {
           return implode('<br />', $rows);
@@ -265,7 +265,7 @@ function acl_node_access_explain($row) {
         return 'No access via ACL.';
       }
       else {
-        $interpretations[$row->gid] .= ': no users!';
+        $interpretations[$row->gid] = "$acl->module/$acl->name: no users!";
       }
     }
     return $interpretations[$row->gid];
