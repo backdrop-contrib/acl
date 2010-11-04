@@ -78,7 +78,7 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
 /**
  * Process a form that had our buttons on it.
  */
-function _acl_edit_form_after_build($form, $form_state) {
+function _acl_edit_form_after_build($form, &$form_state) {
   // We can't use the form values because it's the entire structure
   // and we have no clue where our values actually are. That's
   // ok tho cause #value still works for us.

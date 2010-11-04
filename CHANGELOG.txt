@@ -9,6 +9,7 @@ acl 7.x-1.x-dev:
     - Create new hook_acl_explain() to allow the client to explain its grant records.
     - Add acl_has_user($acl_id, $uid) API function.
   Port to D7:
+    - Need to pass $form_state by reference to _acl_edit_form_after_build().
     - #946636: Fix WSOD due to core reloading the form from the cache and not loading include files.
     - #836822: Don't anonymize 'deny' grant records.
     - #836822: Fix some porting errors.
