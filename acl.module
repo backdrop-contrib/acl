@@ -90,6 +90,24 @@ function acl_edit_form(&$form_state, $acl_id, $label = NULL, $new_acl = FALSE) {
 }
 
 /**
+ * Provide access control to all nodes selected by a subquery, based upon an ACL id.
+ */
+function acl_add_nodes($subselect, $acl_id, $view, $update, $delete, $priority = 0) {
+  db_delete('acl_node')
+    ->condition('acl_id', $acl_id)
+    ->condition('nid', $subselect, 'IN')
+    ->execute();
+  $subselect->addExpression($acl_id, 'acl_id');
+  $subselect->addExpression((int) $view, 'grant_view');
+  $subselect->addExpression((int) $update, 'grant_update');
+  $subselect->addExpression((int) $delete, 'grant_delete');
+  $subselect->addExpression($priority, 'priority');
+  db_insert('acl_node')
+    ->from($subselect)
+    ->execute();
+}
+
+/**
  * Provide access control to a node based upon an ACL id.
  */
 function acl_node_add_acl($nid, $acl_id, $view, $update, $delete, $priority = 0) {
