@@ -71,8 +71,8 @@ function acl_remove_user($acl_id, $uid) {
  * Pass $new_acl=TRUE if you have no ACL yet, but do supply a string
  * like 'my_module_new_acl' as $acl_id anyway.
  */
-function acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
-  module_load_include('admin.inc', 'acl');
+function acl_edit_form(&$form_state, $acl_id, $label = NULL, $new_acl = FALSE) {
+  $form_state['build_info']['files'][] = _acl_module_load_include('admin.inc');
   return _acl_edit_form($acl_id, $label, $new_acl);
 }
 
@@ -231,6 +231,16 @@ function acl_user_cancel($edit, $account, $method) {
   db_delete('acl_user')
     ->condition('uid', $account->uid)
     ->execute();
+}
+
+function _acl_module_load_include($type) {
+  static $loaded = array();
+
+  if (!isset($loaded[$type])) {
+    $path = module_load_include($type, 'acl');
+    $loaded[$type] = drupal_get_path('module', 'acl') . "/acl.$type";
+  }
+  return $loaded[$type];
 }
 
 /**
