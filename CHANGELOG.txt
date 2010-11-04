@@ -5,6 +5,7 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.x-dev:
   Enhancements:
+    - Add $number to hook_acl_explain(), too.
     - Add new acl_add_nodes() function to add access control to multiple nodes selected by a subquery.
     - #936682: Add a 'number' column and some indexes to the {acl} table.
     - #761696: Add tests (work in progress).

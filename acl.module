@@ -294,6 +294,16 @@ function acl_node_access_explain($row) {
       $acl = db_query("SELECT * FROM {acl} WHERE acl_id = :acl_id", array(
         'acl_id' => $row->gid,
       ))->fetchObject();
+      $acl->tag = '?';
+      if (!isset($acl->name)) {
+        $acl->tag = $acl->number;
+      }
+      elseif (!isset($acl->number)) {
+        $acl->tag = $acl->name;
+      }
+      else {
+        $acl->tag = $acl->name . '-' . $acl->number;
+      }
       $result = db_query("SELECT u.name FROM {acl_user} au, {users} u WHERE au.acl_id = :acl_id AND au.uid = u.uid", array(
         'acl_id' => $row->gid,
       ));
@@ -302,14 +312,14 @@ function acl_node_access_explain($row) {
       }
       if (isset($users)) {
         $users = implode(', ', $users);
-        $interpretations[$row->gid] = _acl_get_explanation("$acl->module/$acl->name: $users", $acl->acl_id, $acl->module, $acl->name, $users);
+        $interpretations[$row->gid] = _acl_get_explanation("$acl->module/$acl->tag: $users", $acl->acl_id, $acl->module, $acl->name, $acl->number, $users);
       }
       elseif ($row->gid == 0) {
         $result = db_query("SELECT an.acl_id, a.module, a.name FROM {acl_node} an JOIN {acl} a ON an.acl_id = a.acl_id LEFT JOIN {acl_user} au ON a.acl_id = au.acl_id WHERE an.nid = :nid AND au.uid IS NULL", array(
           'nid' => $row->nid,
         ));
         foreach ($result as $acl) {
-          $rows[] = _acl_get_explanation("$acl->acl_id:&nbsp;$acl->module/$acl->name", $acl->acl_id, $acl->module, $acl->name);
+          $rows[] = _acl_get_explanation("$acl->acl_id:&nbsp;$acl->module/$acl->tag", $acl->acl_id, $acl->module, $acl->name, $acl->number);
         }
         if (!empty($rows)) {
           return implode('<br />', $rows);
@@ -317,7 +327,7 @@ function acl_node_access_explain($row) {
         return 'No access via ACL.';
       }
       else {
-        $interpretations[$row->gid] = _acl_get_explanation("$acl->module/$acl->name: no users!", $acl->acl_id, $acl->module, $acl->name);
+        $interpretations[$row->gid] = _acl_get_explanation("$acl->module/$acl->tag: no users!", $acl->acl_id, $acl->module, $acl->name, $acl->number);
       }
     }
     return $interpretations[$row->gid];
@@ -327,10 +337,10 @@ function acl_node_access_explain($row) {
 /**
  * Asks the client for its interpretation of the given grant record.
  */
-function _acl_get_explanation($text, $acl_id, $module, $name, $users = NULL) {
+function _acl_get_explanation($text, $acl_id, $module, $name, $number, $users = NULL) {
   $hook = $module .'_acl_explain';
   if (function_exists($hook)) {
-    return '<span title="'. $hook($acl_id, $name, $users) .'">'. $text .'</span>';
+    return '<span title="'. $hook($acl_id, $name, $number, $users) .'">'. $text .'</span>';
   }
   return $text;
 }
