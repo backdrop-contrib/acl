@@ -29,8 +29,16 @@ function acl_schema() {
         'type'        => 'varchar',
         'length'      => 255,
       ),
+      'number'        => array(
+        'description' => "A number for this ACL entry, given by the module that created it; use either 'name' or 'number'.",
+        'type'        => 'int',
+      ),
     ),
     'primary key'     => array('acl_id'),
+    'indexes'         => array(
+      'name'          => array('name'),
+      'number'        => array('number'),
+    ),
   );
   $schema['acl_user'] = array(
     'description'     => 'Identifies {users} to which the referenced {acl} entry applies.',
@@ -174,5 +182,16 @@ function acl_update_6001() {
   $ret = array();
   @db_add_index($ret, 'acl_node', 'nid', array('nid'));
   return ($ret['success'] ? $ret : array()); // ignore possible error, if the index already exists
+}
+
+/**
+ * Add 'number' column if it's not there yet, add indexes.
+ */
+function acl_update_7000() {
+  if (!db_field_exists('acl', 'number')) {
+    db_add_field('acl', 'number', array('type' => 'int', 'description' => "A number for this ACL entry, given by the module that created it; use either 'name' or 'number'."));
+    db_add_index('acl', 'name', array('name'));
+    db_add_index('acl', 'number', array('number'));
+  }
 }
 

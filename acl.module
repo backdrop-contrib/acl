@@ -13,11 +13,24 @@
 
 /**
  * Create a new ACL.
+ *
+ * The client module will have to keep track of the ACL. For that it can
+ * assign either a $name or a $number to this ACL.
+ *
+ * @param $module
+ *   The name of the client module.
+ * @param $name
+ *   An arbitrary name for this ACL, freely defined by the client module.
+ * @param $number
+ *   An arbitrary number for this ACL, freely defined by the client module.
+ * @return
+ *   The ID of the newly created ACL.
  */
-function acl_create_new_acl($module, $name) {
+function acl_create_new_acl($module, $name = NULL, $number = NULL) {
   $acl = array(
     'module' => $module,
     'name' => $name,
+    'number' => $number
   );
   drupal_write_record('acl', $acl);
   return $acl['acl_id'];
@@ -125,12 +138,22 @@ function acl_node_clear_acls($nid, $module) {
 }
 
 /**
- * Gets the id of an acl
+ * Gets the id of an ACL by name.
  */
 function acl_get_id_by_name($module, $name) {
   return db_query("SELECT acl_id FROM {acl} WHERE module = :module AND name = :name", array(
     'module' => $module,
-    'name' => $name,
+    'name' => (string) $name,
+  ))->fetchField();
+}
+
+/**
+ * Gets the id of an ACL by number.
+ */
+function acl_get_id_by_number($module, $number) {
+  return db_query("SELECT acl_id FROM {acl} WHERE module = :module AND number = :number", array(
+    'module' => $module,
+    'number' => $number,
   ))->fetchField();
 }
 
