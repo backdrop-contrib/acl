@@ -3,6 +3,11 @@ $Id$
 CHANGELOG for ACL for Drupal 7
 
 
+acl 7.x-1.x-dev:
+  Enhancements:
+    - Add support for ACLs with name /and number/.
+
+
 acl 7.x-1.x-BETA1 (2010-11-06):
   Enhancements:
     - Add $number to hook_acl_explain(), too.
