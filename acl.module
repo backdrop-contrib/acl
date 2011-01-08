@@ -141,16 +141,13 @@ function acl_node_remove_acl($nid, $acl_id) {
  * Clear all of a module's ACL's from a node.
  */
 function acl_node_clear_acls($nid, $module) {
-  $result = db_query("SELECT acl_id FROM {acl} WHERE module = :module", array(
+  $acl_ids = db_query("SELECT acl_id FROM {acl} WHERE module = :module", array(
     'module' => $module
-  ));
-  foreach ($result as $acl) {
-    $acls[] = $acl->acl_id;
-  }
-  if ($acls) {
+  ))->fetchCol();
+  if ($acl_ids) {
     db_delete('acl_node')
       ->condition('nid', $nid)
-      ->condition('acl_id', $acls, 'IN')
+      ->condition('acl_id', $acl_ids, 'IN')
       ->execute();
   }
 }
@@ -222,14 +219,10 @@ function acl_get_ids_by_user($module, $uid, $name = NULL, $number = NULL) {
  * Gets the uids of an acl
  */
 function acl_get_uids($acl_id) {
-  $result = db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id", array(
+  $uids = db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id", array(
     'acl_id' => $acl_id,
-  ));
-  $return = array();
-  foreach ($result as $row) {
-    $return[$row->uid] = $row->uid;
-  }
-  return (empty($return) ? NULL : $return);
+  ))->fetchCol();
+  return $uids;
 }
 
 /**
@@ -268,16 +261,10 @@ function acl_node_access_records($node) {
  * Implementation of hook_node_grants().
  */
 function acl_node_grants($account, $op) {
-  $array = array(
-    'acl' => array(),
-  );
-  $result = db_query("SELECT acl_id FROM {acl_user} WHERE uid = :uid", array(
+  $acl_ids = db_query("SELECT acl_id FROM {acl_user} WHERE uid = :uid", array(
     'uid' => $account->uid,
-  ));
-  foreach ($result as $row) {
-    $array['acl'][] = $row->acl_id;
-  }
-  return !empty($array['acl']) ? $array : NULL;
+  ))->fetchCol();
+  return (!empty($acl_ids) ? array('acl' => $acl_ids) : NULL);
 }
 
 /**
