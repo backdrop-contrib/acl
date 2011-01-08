@@ -199,6 +199,26 @@ function acl_has_user($acl_id, $uid) {
 }
 
 /**
+ * Gets an array of acl_ids held by a user
+ */
+function acl_get_ids_by_user($module, $uid, $name = NULL, $number = NULL) {
+  $query = db_select('acl', 'a');
+  $query->join('acl_user', 'au', 'a.acl_id = au.acl_id');
+  $query
+    ->fields('a', array('acl_id'))
+    ->condition('a.module', $module)
+    ->condition('au.uid', $uid);
+  if (isset($name)) {
+    $query->condition('a.name', $name);
+  }
+  if (isset($number)) {
+    $query->condition('a.number', $number);
+  }
+  $acl_ids = $query->execute()->fetchCol();
+  return $acl_ids;
+}
+
+/**
  * Gets the uids of an acl
  */
 function acl_get_uids($acl_id) {

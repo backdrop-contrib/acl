@@ -5,6 +5,7 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.x-dev:
   Enhancements:
+    - Add acl_get_ids_by_user() API.
     - Add support for ACLs with name /and number/.
 
 
