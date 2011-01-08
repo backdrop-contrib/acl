@@ -4,6 +4,9 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.x-dev:
+
+
+acl 7.x-1.x-BETA2 (2011-01-08):
   Enhancements:
     - Streamline code (no functional change).
     - Add acl_get_ids_by_user() API.
