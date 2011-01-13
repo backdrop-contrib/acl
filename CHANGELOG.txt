@@ -4,6 +4,8 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.x-dev:
+  Bug fixes:
+    - #1024114: Fix query in acl_get_id_by_name().
 
 
 acl 7.x-1.x-BETA2 (2011-01-08):

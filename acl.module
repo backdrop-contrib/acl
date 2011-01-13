@@ -157,7 +157,7 @@ function acl_node_clear_acls($nid, $module) {
  */
 function acl_get_id_by_name($module, $name, $number = NULL) {
   $query = db_select('acl', 'acl')
-    ->addField('acl', 'acl_id')
+    ->fields('acl', array('acl_id'))
     ->condition('module', $module)
     ->condition('name', $name);
   if (isset($number)) {
