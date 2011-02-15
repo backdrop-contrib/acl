@@ -36,8 +36,8 @@ function acl_schema() {
     ),
     'primary key'     => array('acl_id'),
     'indexes'         => array(
-      'name'          => array('name'),
-      'number'        => array('number'),
+      'module_name_number' => array(array('module', 64), array('name', 64), 'number'),
+      'module_number' => array(array('module', 64), 'number'),
     ),
   );
   $schema['acl_user'] = array(
@@ -185,13 +185,29 @@ function acl_update_6001() {
 }
 
 /**
- * Add 'number' column if it's not there yet, add indexes.
+ * Add 'number' column if it's not there yet.
  */
 function acl_update_7000() {
   if (!db_field_exists('acl', 'number')) {
     db_add_field('acl', 'number', array('type' => 'int', 'description' => "A number for this ACL entry, given by the module that created it; use either 'name' or 'number'."));
-    db_add_index('acl', 'name', array('name'));
-    db_add_index('acl', 'number', array('number'));
+  }
+}
+
+/**
+ * Install better indexes.
+ */
+function acl_update_7001() {
+  if (db_index_exists('acl', 'name')) {
+    db_drop_index('acl', 'name');
+  }
+  if (!db_index_exists('acl', 'module_name_number')) {
+    db_add_index('acl', 'module_name_number', array(array('module', 64), array('name', 64), 'number'));
+  }
+  if (db_index_exists('acl', 'number')) {
+    db_drop_index('acl', 'number');
+  }
+  if (!db_index_exists('acl', 'module_number')) {
+    db_add_index('acl', 'module_number', array(array('module', 64), 'number'));
   }
 }
 
