@@ -1,4 +1,3 @@
-$Id$
 
 CHANGELOG for ACL for Drupal 7
 

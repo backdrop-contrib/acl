@@ -1,4 +1,3 @@
-# $Id$
 #
 # german translation of Drupal (acl)
 # Copyright 2008 Eikaa
