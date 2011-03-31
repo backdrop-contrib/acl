@@ -149,15 +149,13 @@ function acl_node_remove_acl($nid, $acl_id) {
  * Clear all of a module's ACLs from a node.
  */
 function acl_node_clear_acls($nid, $module) {
-  $acl_ids = db_query("SELECT acl_id FROM {acl} WHERE module = :module", array(
-    'module' => $module
-  ))->fetchCol();
-  if ($acl_ids) {
-    db_delete('acl_node')
-      ->condition('nid', $nid)
-      ->condition('acl_id', $acl_ids, 'IN')
-      ->execute();
-  }
+  $select = db_select('acl', 'acl')
+    ->fields('acl', array('acl_id'))
+    ->condition('module', $module);
+  db_delete('acl_node')
+    ->condition('nid', $nid)
+    ->condition('acl_id', $select, 'IN')
+    ->execute();
 }
 
 /**

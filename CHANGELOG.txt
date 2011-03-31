@@ -4,6 +4,7 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.x-dev:
   Enhancements:
+    - Issue #852486 by salvis: Optimize acl_node_clear_acls().
     - Add tests for acl_node_*().
     - #968382: Install better indexes.
   Bug fixes:
