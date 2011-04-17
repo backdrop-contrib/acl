@@ -3,6 +3,9 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.x-dev:
+
+
+acl 7.x-1.x-BETA3 (2011-04-17):
   Enhancements:
     - Issue #852486 by salvis: Optimize acl_node_clear_acls().
     - Add tests for acl_node_*().
@@ -18,7 +21,6 @@ acl 7.x-1.x-BETA2 (2011-01-08):
     - Streamline code (no functional change).
     - Add acl_get_ids_by_user() API.
     - Add support for ACLs with name /and number/.
-
 
 acl 7.x-1.x-BETA1 (2010-11-06):
   Enhancements:
