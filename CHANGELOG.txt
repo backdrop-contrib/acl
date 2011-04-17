@@ -4,6 +4,7 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.x-dev:
   Enhancements:
+    - Add tests for acl_node_*().
     - #968382: Install better indexes.
   Bug fixes:
     - Rename acl_create_new_acl() to acl_create_acl().

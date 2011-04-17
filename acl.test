@@ -53,7 +53,7 @@ class AclWebTestCase extends DrupalWebTestCase {
     // Check to see if grants added by node_test_node_access_records()
     // made it in.
     $acl_id = acl_get_id_by_name('test2', $node1->title);
-    $this->assertNotNull($acl_id, t('ACL ID was succesfully found'), $group = 'ACL');
+    $this->assertNotNull($acl_id, t('ACL ID was succesfully found.'), $group = 'ACL');
     $records = db_query('SELECT acl_id, name FROM {acl} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id))->fetchAll();
     $this->assertEqual(count($records), 1, t('ACL was succesfully created.'), $group = 'ACL');
 
@@ -72,18 +72,61 @@ class AclWebTestCase extends DrupalWebTestCase {
     $this->assertEqual(count($records), 0, t('User was succesfully removed.'), $group = 'ACL');
   }
 
-}
+  /**
+   * Includes acl_node_add_acl, acl_node_remove_acl, acl_node_clear_acls
+   */
+  function testNodeAclAddRemoveFromNode() {
+    // Add nodes.
+    $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $this->assertTrue(node_load($node1->nid), t('Page node created.'));
+    $node2 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $this->assertTrue(node_load($node2->nid), t('Page node created.'));
+    $node3 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $this->assertTrue(node_load($node3->nid), t('Page node created.'));
 
-/**
- * Includes acl_node_add_acl, acl_node_remove_acl, acl_get_id_by_name
- */
-function testNodeAclAddRemoveFromNode() {
-}
+    // Create an ACL and add nodes.
+    $acl_id1 = acl_create_acl('test3', 'test', 1);
+    $this->assertNotNull($acl_id1, t('ACL ID was created.'), $group = 'ACL');
+    // Add two nodes.
+    $query = db_select('node', 'n')
+      ->fields('n', array('nid'))
+      ->condition('nid', array($node1->nid, $node2->nid), 'IN');
+    acl_add_nodes($query, $acl_id1, 1, 1, 1);
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id1))->fetchField();
+    $this->assertEqual($count, 2, t("2 nodes under control ($count)."), $group = 'ACL');
+    // Add a third node.
+    acl_node_add_acl($node3->nid, $acl_id1, 1, 1, 1);
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id1))->fetchField();
+    $this->assertEqual($count, 3, t('3 nodes under control.'), $group = 'ACL');
+    // Add the second node again.
+    acl_node_add_acl($node2->nid, $acl_id1, 1, 1, 1);
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id1))->fetchField();
+    $this->assertEqual($count, 3, t('Still only 3 nodes under control.'), $group = 'ACL');
 
-/**
- * Includes acl_node_clear_acls, acl_get_id_by_name
- */
-function testNodeAclAddRandomAndClearNode() {
+    // Remove the second node again.
+    acl_node_remove_acl($node2->nid, $acl_id1);
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id1))->fetchField();
+    $this->assertEqual($count, 2, t('2 nodes left under control.'), $group = 'ACL');
+    // Remove the second node again.
+    acl_node_remove_acl($node2->nid, $acl_id1);
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id1))->fetchField();
+    $this->assertEqual($count, 2, t('Still 2 nodes left under control.'), $group = 'ACL');
+
+    // Create another ACL and add nodes.
+    $acl_id2 = acl_create_acl('test3', 'test', 2);
+    $this->assertNotNull($acl_id2, t('ACL ID was created.'), $group = 'ACL');
+    acl_node_add_acl($node1->nid, $acl_id2, 1, 1, 1);
+    acl_node_add_acl($node2->nid, $acl_id2, 1, 1, 1);
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id2))->fetchField();
+    $this->assertEqual($count, 2, t('2 nodes under control.'), $group = 'ACL');
+    // Remove a node (which has two ACLs).
+    acl_node_clear_acls($node1->nid, 'test3');
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id1))->fetchField();
+    $this->assertEqual($count, 1, t('1 node left under control.'), $group = 'ACL');
+    $count = db_query('SELECT COUNT(nid) FROM {acl_node} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id2))->fetchField();
+    $this->assertEqual($count, 1, t('1 node left under control.'), $group = 'ACL');
+  }
+
 }
 
 /**
