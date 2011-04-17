@@ -25,7 +25,7 @@
  * @return
  *   The ID of the newly created ACL.
  */
-function acl_create_new_acl($module, $name = NULL, $number = NULL) {
+function acl_create_acl($module, $name = NULL, $number = NULL) {
   $acl = array(
     'module' => $module,
     'name' => $name,
@@ -33,6 +33,15 @@ function acl_create_new_acl($module, $name = NULL, $number = NULL) {
   );
   drupal_write_record('acl', $acl);
   return $acl['acl_id'];
+}
+
+/**
+ * Create a new ACL (obsolete).
+ *
+ * @see acl_create_acl()
+ */
+function acl_create_new_acl($module, $name = NULL, $number = NULL) {
+  return acl_create_acl($module, $name, $number);
 }
 
 /**

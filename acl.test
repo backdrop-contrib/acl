@@ -21,14 +21,14 @@ class AclWebTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Includes acl_create_new_acl, acl_delete_acl, acl_get_id_by_name
+   * Includes acl_create_acl, acl_delete_acl, acl_get_id_by_name
    */
   function testNodeAclCreateDelete() {
     // Add a node.
     $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
     $this->assertTrue(node_load($node1->nid), t('Page node created.'));
 
-    acl_create_new_acl('test1', $node1->title);
+    acl_create_acl('test1', $node1->title);
     $acl_id = acl_get_id_by_name('test1', $node1->title);
     $this->assertNotNull($acl_id, t('ACL ID was succesfully found.'), $group = 'ACL');
     $records = db_query('SELECT acl_id, name FROM {acl} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id))->fetchAll();
@@ -49,7 +49,7 @@ class AclWebTestCase extends DrupalWebTestCase {
     $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
     $this->assertTrue(node_load($node1->nid), t('Page node created.'));
 
-    acl_create_new_acl('test2', $node1->title);
+    acl_create_acl('test2', $node1->title);
     // Check to see if grants added by node_test_node_access_records()
     // made it in.
     $acl_id = acl_get_id_by_name('test2', $node1->title);
