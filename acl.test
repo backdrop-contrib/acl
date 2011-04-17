@@ -2,6 +2,7 @@
 // $Id:
 
 class AclWebTestCase extends DrupalWebTestCase {
+
   public static function getInfo() {
     return array(
       'name' => 'ACL access permissions',
@@ -9,6 +10,7 @@ class AclWebTestCase extends DrupalWebTestCase {
       'group' => 'ACL',
     );
   }
+
   /**
    * Implementation setUp().
    */
@@ -17,69 +19,79 @@ class AclWebTestCase extends DrupalWebTestCase {
     $web_user = $this->drupalCreateUser(array('create page content'));
     $this->drupalLogin($web_user);
   }
-/**
- * Includes acl_create_new_acl, acl_delete_acl, acl_get_id_by_name
- */
+
+  /**
+   * Includes acl_create_new_acl, acl_delete_acl, acl_get_id_by_name
+   */
   function testNodeAclCreateDelete() {
-    //add a node
+    // Add a node.
     $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
-    //Check if the node was created
     $this->assertTrue(node_load($node1->nid), t('Page node created.'));
-    acl_node_acl_create_new_acl($node1->title);
-    $acl_id = acl_node_acl_get_id_by_name($node1->title);
-    $this->assertNotNull($acl_id, t('ACL ID was succesfully found'), $group= 'ACL');
+
+    acl_create_new_acl('test1', $node1->title);
+    $acl_id = acl_get_id_by_name('test1', $node1->title);
+    $this->assertNotNull($acl_id, t('ACL ID was succesfully found.'), $group = 'ACL');
     $records = db_query('SELECT acl_id, name FROM {acl} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id))->fetchAll();
-    $this->assertEqual(count($records), 1, t('ACL was succesfully created.'), $group= 'ACL');
-    acl_node_acl_delete_acl($records[0]->acl_id);
+    $this->assertEqual(count($records), 1, t('ACL was succesfully created.'), $group = 'ACL');
+    acl_delete_acl($records[0]->acl_id);
 
     $records = db_query('SELECT acl_id, name FROM {acl} WHERE acl_id = :acl_id', array(':acl_id' => $records[0]->acl_id))->fetchAll();
     $this->pass(var_export($records, TRUE));
-    $this->assertEqual(count($records), 0, t('ACL was succesfully removed.'), $group= 'ACL');
+    $this->assertEqual(count($records), 0, t('ACL was succesfully removed.'), $group = 'ACL');
   }
-/**
- * Includes acl_add_user, acl_remove_user, acl_has_users,
- * acl_get_id_by_name, acl_has_user, acl_get_uids
- */
+
+  /**
+   * Includes acl_add_user, acl_remove_user, acl_has_users,
+   * acl_get_id_by_name, acl_has_user, acl_get_uids
+   */
   function testNodeAclSingleUserAddRemove() {
+    // Add a node.
     $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
-    //Check if the node was created
     $this->assertTrue(node_load($node1->nid), t('Page node created.'));
-    acl_node_acl_create_new_acl($node1->title);
-    // Check to see if grants added by node_test_node_access_records
+
+    acl_create_new_acl('test2', $node1->title);
+    // Check to see if grants added by node_test_node_access_records()
     // made it in.
-    $acl_id = acl_node_acl_get_id_by_name($node1->title);
-    $this->assertNotNull($acl_id, t('ACL ID was succesfully found'), $group= 'ACL');
+    $acl_id = acl_get_id_by_name('test2', $node1->title);
+    $this->assertNotNull($acl_id, t('ACL ID was succesfully found'), $group = 'ACL');
     $records = db_query('SELECT acl_id, name FROM {acl} WHERE acl_id = :acl_id', array(':acl_id' => $acl_id))->fetchAll();
-    $this->assertEqual(count($records), 1, t('ACL was succesfully created.'), $group= 'ACL');
-    //add user (can't we use the user created in setup?)
+    $this->assertEqual(count($records), 1, t('ACL was succesfully created.'), $group = 'ACL');
+
+    // Add user (can't we use the user created in setup?).
     $web_user_1 = $this->drupalCreateUser();
     //$this->drupalLogin($web_user);
-    acl_node_acl_add_user($acl_id,$web_user_1->uid);
+    acl_add_user($acl_id, $web_user_1->uid);
     $records = db_query('SELECT acl_id, uid FROM {acl_user} WHERE uid = :uid', array(':uid' => $web_user_1->uid))->fetchAll();
-    //verify user is added
-    $this->assertEqual(count($records), 1, t('User was succesfully added.'), $group= 'ACL');
-    //remove user
-    acl_node_acl_remove_user($acl_id, $web_user_1->uid);
+    // Verify user is added.
+    $this->assertEqual(count($records), 1, t('User was succesfully added.'), $group = 'ACL');
+
+    // Remove user.
+    acl_remove_user($acl_id, $web_user_1->uid);
     $records = db_query('SELECT acl_id, uid FROM {acl_user} WHERE uid = :uid', array(':uid' => $web_user_1->uid))->fetchAll();
-    //verify user is removed
-    $this->assertEqual(count($records), 0, t('User was succesfully removed.'), $group= 'ACL');
+    // Verify user is removed.
+    $this->assertEqual(count($records), 0, t('User was succesfully removed.'), $group = 'ACL');
   }
+
 }
+
 /**
  * Includes acl_node_add_acl, acl_node_remove_acl, acl_get_id_by_name
  */
 function testNodeAclAddRemoveFromNode() {
 }
+
 /**
  * Includes acl_node_clear_acls, acl_get_id_by_name
  */
 function testNodeAclAddRandomAndClearNode() {
 }
+
 /**
  * Included acl_node_delete
  */
 function testNodeAclAddAndRemoveNode() {
 }
+
 /**
  * Included acl_user_cancel
  */

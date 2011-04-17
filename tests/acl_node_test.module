@@ -22,7 +22,8 @@ function acl_node_test_node_grants($account, $op) {
 
 /**
  * Implements hook_node_access_records().
- * Implicit View by All is allowed
+ *
+ * Implicit View by All is allowed.
  */
 function acl_node_test_node_access_records($node) {
   $grants = array();
@@ -68,9 +69,10 @@ function acl_node_test_node_access_records_alter(&$grants, $node) {
 
 /**
  * Implements hook_node_grants_alter().
+ *
+ * Returns an empty array of grants to prove that we can alter by reference.
  */
 function acl_node_test_node_grants_alter(&$grants, $account, $op) {
-  // Return an empty array of grants to prove that we can alter by reference.
   $grants = array();
 }
 
@@ -84,40 +86,4 @@ function acl_node_test_node_presave($node) {
     // Drupal 1.0 release.
     $node->changed = 979534800;
   }
-}
-
-/**
- * Helper function to create a new ACL through this module
- */
-function acl_node_acl_create_new_acl($name) {
-  //should not be called acl_create_new_acl but acl_create_acl
-  acl_create_new_acl('acl_node_test', $name);
-}
-
-/**
- * Helper function to delete an ACL through this module
- */
-function acl_node_acl_delete_acl($acl_id) {
-  acl_delete_acl($acl_id);
-}
-
-/**
- * Helper function to add an user
- */
-function acl_node_acl_add_user($acl_id,$uid) {
-  acl_add_user($acl_id,$uid);
-}
-
-/**
- * Helper function to remove an user
- */
-function acl_node_acl_remove_user($acl_id,$uid) {
-  acl_remove_user($acl_id,$uid);
-}
-
-/**
- * Helper function to get an ID of an ACL by it's name
-*/
-function acl_node_acl_get_id_by_name($acl_name) {
-  return $acl_id = acl_get_id_by_name('acl_node_test', $acl_name);
 }
