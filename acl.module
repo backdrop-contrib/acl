@@ -146,7 +146,7 @@ function acl_node_remove_acl($nid, $acl_id) {
 }
 
 /**
- * Clear all of a module's ACL's from a node.
+ * Clear all of a module's ACLs from a node.
  */
 function acl_node_clear_acls($nid, $module) {
   $acl_ids = db_query("SELECT acl_id FROM {acl} WHERE module = :module", array(
@@ -161,7 +161,7 @@ function acl_node_clear_acls($nid, $module) {
 }
 
 /**
- * Gets the id of an ACL by name (+ optionally number).
+ * Get the id of an ACL by name (+ optionally number).
  */
 function acl_get_id_by_name($module, $name, $number = NULL) {
   $query = db_select('acl', 'acl')
@@ -175,7 +175,7 @@ function acl_get_id_by_name($module, $name, $number = NULL) {
 }
 
 /**
- * Gets the id of an ACL by number.
+ * Get the id of an ACL by number.
  */
 function acl_get_id_by_number($module, $number) {
   return db_query("SELECT acl_id FROM {acl} WHERE module = :module AND number = :number", array(
@@ -185,7 +185,7 @@ function acl_get_id_by_number($module, $number) {
 }
 
 /**
- * Determines if an acl has some assigned users
+ * Determine whether an ACL has some assigned users.
  */
 function acl_has_users($acl_id) {
   return db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id", array(
@@ -194,7 +194,7 @@ function acl_has_users($acl_id) {
 }
 
 /**
- * Determines if an acl has a specific assigned user
+ * Determine whether an ACL has a specific assigned user.
  */
 function acl_has_user($acl_id, $uid) {
   return db_query("SELECT COUNT(uid) FROM {acl_user} WHERE acl_id = :acl_id AND uid = :uid", array(
@@ -204,7 +204,7 @@ function acl_has_user($acl_id, $uid) {
 }
 
 /**
- * Gets an array of acl_ids held by a user
+ * Get an array of acl_ids held by a user.
  */
 function acl_get_ids_by_user($module, $uid, $name = NULL, $number = NULL) {
   $query = db_select('acl', 'a');
@@ -224,7 +224,7 @@ function acl_get_ids_by_user($module, $uid, $name = NULL, $number = NULL) {
 }
 
 /**
- * Gets the uids of an acl
+ * Get the uids of an ACL.
  */
 function acl_get_uids($acl_id) {
   $uids = db_query("SELECT uid FROM {acl_user} WHERE acl_id = :acl_id", array(
@@ -234,7 +234,7 @@ function acl_get_uids($acl_id) {
 }
 
 /**
- * Implementation of hook_node_access_records().
+ * Implements hook_node_access_records().
  */
 function acl_node_access_records($node) {
   if (!$node->nid) {
@@ -266,7 +266,7 @@ function acl_node_access_records($node) {
 }
 
 /**
- * Implementation of hook_node_grants().
+ * Implements hook_node_grants().
  */
 function acl_node_grants($account, $op) {
   $acl_ids = db_query("SELECT acl_id FROM {acl_user} WHERE uid = :uid", array(
@@ -276,7 +276,7 @@ function acl_node_grants($account, $op) {
 }
 
 /**
- * Implementation of hook_node_delete().
+ * Implements hook_node_delete().
  */
 function acl_node_delete($node) {
   db_delete('acl_node')
@@ -285,7 +285,7 @@ function acl_node_delete($node) {
 }
 
 /**
- * Implementation of hook_user_cancel().
+ * Implements hook_user_cancel().
  */
 function acl_user_cancel($edit, $account, $method) {
   db_delete('acl_user')
@@ -293,6 +293,9 @@ function acl_user_cancel($edit, $account, $method) {
     ->execute();
 }
 
+/**
+ * Helper function to load include files.
+ */
 function _acl_module_load_include($type) {
   static $loaded = array();
 
@@ -304,7 +307,7 @@ function _acl_module_load_include($type) {
 }
 
 /**
- * Implementation of hook_node_access_explain().
+ * Implements hook_node_access_explain().
  */
 function acl_node_access_explain($row) {
   static $interpretations = array();
@@ -354,7 +357,8 @@ function acl_node_access_explain($row) {
 }
 
 /**
- * Asks the client for its interpretation of the given grant record.
+ * Helper function to ask the client for its interpretation of the given 
+ * grant record.
  */
 function _acl_get_explanation($text, $acl_id, $module, $name, $number, $users = NULL) {
   $hook = $module .'_acl_explain';
