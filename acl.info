@@ -6,3 +6,5 @@ files[] = acl.admin.inc
 files[] = acl.install
 files[] = acl.module
 files[] = acl.test
+
+version = 7.x-1.0-beta3

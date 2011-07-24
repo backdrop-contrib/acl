@@ -149,9 +149,9 @@ function acl_node_remove_acl($nid, $acl_id) {
  * Clear all of a module's ACLs from a node.
  */
 function acl_node_clear_acls($nid, $module) {
-  $select = db_select('acl', 'acl')
-    ->fields('acl', array('acl_id'))
-    ->condition('module', $module);
+  $select = db_select('acl', 'a')
+    ->fields('a', array('acl_id'))
+    ->condition('a.module', $module);
   db_delete('acl_node')
     ->condition('nid', $nid)
     ->condition('acl_id', $select, 'IN')
@@ -162,12 +162,12 @@ function acl_node_clear_acls($nid, $module) {
  * Get the id of an ACL by name (+ optionally number).
  */
 function acl_get_id_by_name($module, $name, $number = NULL) {
-  $query = db_select('acl', 'acl')
-    ->fields('acl', array('acl_id'))
-    ->condition('module', $module)
-    ->condition('name', $name);
+  $query = db_select('acl', 'a')
+    ->fields('a', array('acl_id'))
+    ->condition('a.module', $module)
+    ->condition('a.name', $name);
   if (isset($number)) {
-    $query->condition('number', $number);
+    $query->condition('a.number', $number);
   }
   return $query->execute()->fetchField();
 }
@@ -176,10 +176,11 @@ function acl_get_id_by_name($module, $name, $number = NULL) {
  * Get the id of an ACL by number.
  */
 function acl_get_id_by_number($module, $number) {
-  return db_query("SELECT acl_id FROM {acl} WHERE module = :module AND number = :number", array(
-    'module' => $module,
-    'number' => $number,
-  ))->fetchField();
+  $query = db_select('acl', 'a')
+    ->fields('a', array('acl_id'))
+    ->condition('a.module', $module)
+    ->condition('a.number', $name);
+  return $query->execute()->fetchField();
 }
 
 /**

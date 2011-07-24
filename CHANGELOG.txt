@@ -3,6 +3,8 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.x-dev:
+  Bug fixes:
+    - #1228214: Fully qualify field parameter in SelectQuery::condition() calls.
 
 
 acl 7.x-1.x-BETA3 (2011-04-17):
