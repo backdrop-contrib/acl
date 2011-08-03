@@ -179,7 +179,7 @@ function acl_get_id_by_number($module, $number) {
   $query = db_select('acl', 'a')
     ->fields('a', array('acl_id'))
     ->condition('a.module', $module)
-    ->condition('a.number', $name);
+    ->condition('a.number', $number);
   return $query->execute()->fetchField();
 }
 

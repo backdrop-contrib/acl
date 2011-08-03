@@ -4,6 +4,7 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.x-dev:
   Bug fixes:
+    - Fix typo introduced in prior commit.
     - #1228214: Fully qualify field parameter in SelectQuery::condition() calls.
 
 
