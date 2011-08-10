@@ -2,14 +2,17 @@
 CHANGELOG for ACL for Drupal 7
 
 
-acl 7.x-1.x-dev:
+acl 7.x-1.0-dev:
+
+
+acl 7.x-1.0-rc1 (2011-08-10):
   Bug fixes:
     - Remove version number and file list from .info file now that it's not needed anymore.
     - Fix typo introduced in prior commit.
     - #1228214: Fully qualify field parameter in SelectQuery::condition() calls.
 
 
-acl 7.x-1.x-BETA3 (2011-04-17):
+acl 7.x-1.0-beta3 (2011-04-17):
   Enhancements:
     - Issue #852486 by salvis: Optimize acl_node_clear_acls().
     - Add tests for acl_node_*().
@@ -19,14 +22,13 @@ acl 7.x-1.x-BETA3 (2011-04-17):
     - Fix indenting, spacing, comments; remove useless helper functions. No functional changes.
     - #1024114: Fix query in acl_get_id_by_name().
 
-
-acl 7.x-1.x-BETA2 (2011-01-08):
+acl 7.x-1.0-beta2 (2011-01-08):
   Enhancements:
     - Streamline code (no functional change).
     - Add acl_get_ids_by_user() API.
     - Add support for ACLs with name /and number/.
 
-acl 7.x-1.x-BETA1 (2010-11-06):
+acl 7.x-1.0-beta1 (2010-11-06):
   Enhancements:
     - Add $number to hook_acl_explain(), too.
     - Add new acl_add_nodes() function to add access control to multiple nodes selected by a subquery.
