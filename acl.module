@@ -119,20 +119,27 @@ function acl_add_nodes($subselect, $acl_id, $view, $update, $delete, $priority =
  * Provide access control to a node based upon an ACL id.
  */
 function acl_node_add_acl($nid, $acl_id, $view, $update, $delete, $priority = 0) {
-  db_delete('acl_node')
-    ->condition('acl_id', $acl_id)
-    ->condition('nid', $nid)
-    ->execute();
-  db_insert('acl_node')
-  ->fields(array(
-    'acl_id' => $acl_id,
-    'nid' => $nid,
-    'grant_view' => (int) $view,
+  acl_node_add_acl_record(array(
+    'acl_id'       => $acl_id,
+    'nid'          => $nid,
+    'grant_view'   => (int) $view,
     'grant_update' => (int) $update,
     'grant_delete' => (int) $delete,
-    'priority' => $priority,
-  ))
-  ->execute();
+    'priority'     => $priority,
+  ));
+}
+
+/**
+ * Provide access control to a node based upon an ACL id.
+ */
+function acl_node_add_acl_record(array $record) {
+  db_delete('acl_node')
+    ->condition('acl_id', $record['acl_id'])
+    ->condition('nid', $record['nid'])
+    ->execute();
+  db_insert('acl_node')
+    ->fields($record)
+    ->execute();
 }
 
 /**
@@ -356,7 +363,7 @@ function acl_node_access_explain($row) {
 }
 
 /**
- * Helper function to ask the client for its interpretation of the given 
+ * Helper function to ask the client for its interpretation of the given
  * grant record.
  */
 function _acl_get_explanation($text, $acl_id, $module, $name, $number, $users = NULL) {

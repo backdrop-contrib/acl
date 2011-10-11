@@ -3,6 +3,12 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.0-dev:
+  Enhancements:
+    - Add acl_node_add_acl_record() function to support extending the {acl_node} table.
+
+
+acl 7.x-1.0 (2011-08-24):
+  (no changes)
 
 
 acl 7.x-1.0-rc1 (2011-08-10):
@@ -10,7 +16,6 @@ acl 7.x-1.0-rc1 (2011-08-10):
     - Remove version number and file list from .info file now that it's not needed anymore.
     - Fix typo introduced in prior commit.
     - #1228214: Fully qualify field parameter in SelectQuery::condition() calls.
-
 
 acl 7.x-1.0-beta3 (2011-04-17):
   Enhancements:
