@@ -3,12 +3,11 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.0-dev:
+
+
+acl 7.x-1.0 (2011-11-26):
   Enhancements:
     - Add acl_node_add_acl_record() function to support extending the {acl_node} table.
-
-
-acl 7.x-1.0 (2011-08-24):
-  (no changes)
 
 
 acl 7.x-1.0-rc1 (2011-08-10):
