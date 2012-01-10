@@ -89,8 +89,10 @@ function acl_remove_user($acl_id, $uid) {
 
 /**
  * Provide a form to edit the ACL that can be embedded in other forms.
+ *
  * Pass $new_acl=TRUE if you have no ACL yet, but do supply a string
- * like 'my_module_new_acl' as $acl_id anyway.
+ * like 'my_module_new_acl' as $acl_id anyway; create the ACL and set
+ * $form['acl_id'] before calling acl_save_form().
  */
 function acl_edit_form(&$form_state, $acl_id, $label = NULL, $new_acl = FALSE) {
   $form_state['build_info']['files'][] = _acl_module_load_include('admin.inc');

@@ -3,6 +3,8 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.0-dev:
+  Enhancements:
+    - #1397828: Improve documentation of acl_edit_form() (no functional change).
 
 
 acl 7.x-1.0 (2011-11-26):
