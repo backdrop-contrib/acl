@@ -1,5 +1,9 @@
 <?php
-// $Id:
+
+/**
+ * @file
+ * Tests for the ACL module.
+ */
 
 class AclWebTestCase extends DrupalWebTestCase {
 

@@ -30,7 +30,7 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
   $form = array(
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
-    '#title' => $label,
+    '#title' => check_plain($label),
     '#tree' => TRUE,
   );
 

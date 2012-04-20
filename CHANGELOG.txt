@@ -4,7 +4,8 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.0-dev:
   Enhancements:
-    - Enable the tests.
+    - Make coder happy (no functional change).
+    - Enable the tests (no functional change).
     - #1397828: Improve documentation of acl_edit_form() (no functional change).
 
 
