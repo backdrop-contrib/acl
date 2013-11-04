@@ -366,9 +366,9 @@ function acl_node_access_explain($row) {
  * grant record.
  */
 function _acl_get_explanation($text, $acl_id, $module, $name, $number, $usernames = NULL) {
-  $hook = $module .'_acl_explain';
+  $hook = $module . '_acl_explain';
   if (function_exists($hook)) {
-    return '<span title="'. $hook($acl_id, $name, $number, $usernames) .'">'. $text .'</span>';
+    return '<span title="' . $hook($acl_id, $name, $number, $usernames) . '">' . $text . '</span>';
   }
   return $text;
 }

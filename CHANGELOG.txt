@@ -4,6 +4,7 @@ CHANGELOG for ACL for Drupal 7
 
 acl 7.x-1.0-dev:
   Enhancements:
+    - Improve minor coding nits (no functional changes).
     - #2101809 by gisle, salvis: Improve support for the anonymous user.
     - Revise the README.txt file.
     - Make coder happy (no functional change).
