@@ -88,6 +88,15 @@ function acl_remove_user($acl_id, $uid) {
 }
 
 /**
+ * Remove all users from an ACL.
+ */
+function acl_remove_all_users($acl_id) {
+  db_delete('acl_user')
+    ->condition('acl_id', $acl_id)
+    ->execute();
+}
+
+/**
  * Provide a form to edit the ACL that can be embedded in other forms.
  *
  * Pass $new_acl=TRUE if you have no ACL yet, but do supply a string

@@ -3,6 +3,8 @@ CHANGELOG for ACL for Drupal 7
 
 
 acl 7.x-1.x-dev:
+  Fixes:
+    - #2580207 by mccrodp: Add missing acl_remove_all_users() function.
 
 
 acl 7.x-1.1 (2015-08-27):
