@@ -1,6 +1,5 @@
 name = ACL
 description = Access control list API. Has no features on its own.
-core = 7.x
+backdrop = 1.x
 package = Access control
-
-files[] = tests/acl.test
+type = module

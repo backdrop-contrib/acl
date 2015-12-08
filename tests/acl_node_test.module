@@ -83,7 +83,7 @@ function acl_node_test_node_presave($node) {
   if ($node->title == 'testing_node_presave') {
     // Sun, 19 Nov 1978 05:00:00 GMT
     $node->created = 280299600;
-    // Drupal 1.0 release.
+    // Backdrop 1.0 release.
     $node->changed = 979534800;
   }
 }

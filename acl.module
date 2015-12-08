@@ -31,7 +31,7 @@ function acl_create_acl($module, $name = NULL, $number = NULL) {
     'name' => $name,
     'number' => $number
   );
-  drupal_write_record('acl', $acl);
+  backdrop_write_record('acl', $acl);
   return $acl['acl_id'];
 }
 
@@ -318,7 +318,7 @@ function _acl_module_load_include($type) {
 
   if (!isset($loaded[$type])) {
     $path = module_load_include($type, 'acl');
-    $loaded[$type] = drupal_get_path('module', 'acl') . "/acl.$type";
+    $loaded[$type] = backdrop_get_path('module', 'acl') . "/acl.$type";
   }
   return $loaded[$type];
 }

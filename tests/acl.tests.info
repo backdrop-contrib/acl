@@ -1,0 +1,5 @@
+[AclWebTestCase]
+name = ACL Module Tests
+description = Automated SimpleTest case for ACL module.
+group = ACL
+file = acl.test

@@ -8,7 +8,7 @@
 /**
  * Test case for ACL module.
  */
-class AclWebTestCase extends DrupalWebTestCase {
+class AclWebTestCase extends BackdropWebTestCase {
 
   /**
    * Implements getInfo().
@@ -28,8 +28,8 @@ class AclWebTestCase extends DrupalWebTestCase {
    */
   function setUp() {
     parent::setUp('acl', 'acl_node_test');
-    $web_user = $this->drupalCreateUser(array('create page content'));
-    $this->drupalLogin($web_user);
+    $web_user = $this->backdropCreateUser(array('create page content'));
+    $this->backdropLogin($web_user);
   }
 
   /**
@@ -37,7 +37,7 @@ class AclWebTestCase extends DrupalWebTestCase {
    */
   function testNodeAclCreateDelete() {
     // Add a node.
-    $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $node1 = $this->backdropCreateNode(array('type' => 'page', 'promote' => 0));
     $this->assertTrue(node_load($node1->nid), t('Page node created.'));
 
     acl_create_acl('test1', $node1->title);
@@ -58,7 +58,7 @@ class AclWebTestCase extends DrupalWebTestCase {
    */
   function testNodeAclSingleUserAddRemove() {
     // Add a node.
-    $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $node1 = $this->backdropCreateNode(array('type' => 'page', 'promote' => 0));
     $this->assertTrue(node_load($node1->nid), t('Page node created.'));
 
     acl_create_acl('test2', $node1->title);
@@ -70,8 +70,8 @@ class AclWebTestCase extends DrupalWebTestCase {
     $this->assertEqual(count($records), 1, t('ACL was succesfully created.'), $group = 'ACL');
 
     // Add user (can't we use the user created in setup?).
-    $web_user_1 = $this->drupalCreateUser();
-    //$this->drupalLogin($web_user);
+    $web_user_1 = $this->backdropCreateUser();
+    //$this->backdropLogin($web_user);
     acl_add_user($acl_id, $web_user_1->uid);
     $records = db_query('SELECT acl_id, uid FROM {acl_user} WHERE uid = :uid', array(':uid' => $web_user_1->uid))->fetchAll();
     // Verify user is added.
@@ -89,11 +89,11 @@ class AclWebTestCase extends DrupalWebTestCase {
    */
   function testNodeAclAddRemoveFromNode() {
     // Add nodes.
-    $node1 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $node1 = $this->backdropCreateNode(array('type' => 'page', 'promote' => 0));
     $this->assertTrue(node_load($node1->nid), t('Page node created.'));
-    $node2 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $node2 = $this->backdropCreateNode(array('type' => 'page', 'promote' => 0));
     $this->assertTrue(node_load($node2->nid), t('Page node created.'));
-    $node3 = $this->drupalCreateNode(array('type' => 'page', 'promote' => 0));
+    $node3 = $this->backdropCreateNode(array('type' => 'page', 'promote' => 0));
     $this->assertTrue(node_load($node3->nid), t('Page node created.'));
 
     // Create an ACL and add nodes.
