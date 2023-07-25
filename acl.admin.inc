@@ -90,7 +90,7 @@ function _acl_edit_form_after_build($form, &$form_state) {
   // We can't use the form values because it's the entire structure
   // and we have no clue where our values actually are. That's
   // ok tho cause #value still works for us.
-  $user_list = unserialize($form['user_list']['#value']);
+  $user_list = acl_edit_form_get_user_list($form);
 
   if (isset($form_state['triggering_element']) && $form_state['triggering_element']['#value'] == $form['delete_button']['#value']) {
     $deletions = $form['deletions']['#value'];
@@ -133,7 +133,7 @@ function _acl_edit_form_after_build($form, &$form_state) {
  * The module that embedded our form must call this function!
  */
 function acl_save_form($form, $priority = NULL) {
-  $users = unserialize($form['user_list']);
+  $users = acl_edit_form_get_user_list($form);
   db_delete('acl_user')
     ->condition('acl_id', $form['acl_id'])
     ->execute();
@@ -155,3 +155,22 @@ function acl_save_form($form, $priority = NULL) {
   }
 }
 
+/**
+ * Decode and return the list of users.
+ *
+ * @param array $form
+ *   The ACL form or form_state array.
+ * @param bool $get_default
+ *   (optional) In the case of a form array, whether to return the
+ *   '#default_value' (or the '#value').
+ *
+ * @return array
+ *   An array of $uid => $username.
+ */
+function acl_edit_form_get_user_list($form, $get_default = FALSE) {
+  if (is_array($form['user_list'])) {
+    $return_value = $get_default ? '#default_value' : '#value';
+    return unserialize($form['user_list'][$return_value]);
+  }
+  return unserialize($form['user_list']);
+}
