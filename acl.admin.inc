@@ -82,7 +82,6 @@ function _acl_edit_form_after_build($form, &$form_state) {
   // and we have no clue where our values actually are. That's
   // ok tho cause #value still works for us.
   $user_list = unserialize($form['user_list']['#value']);
-  $button_name = 'acl_' . $form['acl_id']['#value'];
 
   if (isset($form_state['triggering_element']) && $form_state['triggering_element']['#value'] == $form['delete_button']['#value']) {
     $deletions = $form['deletions']['#value'];

@@ -317,7 +317,7 @@ function _acl_module_load_include($type) {
   static $loaded = array();
 
   if (!isset($loaded[$type])) {
-    $path = module_load_include($type, 'acl');
+    module_load_include($type, 'acl');
     $loaded[$type] = backdrop_get_path('module', 'acl') . "/acl.$type";
   }
   return $loaded[$type];
