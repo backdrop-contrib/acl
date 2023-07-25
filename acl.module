@@ -121,9 +121,12 @@ function acl_add_nodes($subselect, $acl_id, $view, $update, $delete, $priority =
   $subselect->addExpression((int) $update, 'grant_update');
   $subselect->addExpression((int) $delete, 'grant_delete');
   $subselect->addExpression($priority, 'priority');
-  db_insert('acl_node')
-    ->from($subselect)
-    ->execute();
+  $query = db_insert('acl_node')
+    ->fields(array('nid', 'acl_id', 'grant_view', 'grant_update', 'grant_delete', 'priority'));
+  foreach ($subselect->execute()->fetchAll(PDO::FETCH_ASSOC) as $record) {
+    $query->values($record);
+  }
+  $query->execute();
 }
 
 /**
