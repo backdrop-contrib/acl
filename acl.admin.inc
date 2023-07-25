@@ -6,6 +6,19 @@
  */
 
 /**
+ * Implementation of acl_get_usernames().
+ */
+function _acl_get_usernames($acl_id) {
+  $users = array();
+  $result = db_query("SELECT u.uid, u.name FROM {users} u LEFT JOIN {acl_user} aclu ON aclu.uid = u.uid WHERE acl_id = :acl_id", array(
+    'acl_id' => $acl_id));
+  foreach ($result as $user) {
+    $users[$user->uid] = _acl_format_username($user);
+  }
+  return $users;
+}
+
+/**
  * Implementation of acl_edit_form().
  */
 function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
@@ -17,11 +30,7 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
     ))->fetchAssoc())) {
       return array();
     }
-    $result = db_query("SELECT u.uid, u.name FROM {users} u LEFT JOIN {acl_user} aclu ON aclu.uid = u.uid WHERE acl_id = :acl_id", array(
-      'acl_id' => $acl_id));
-    foreach ($result as $user) {
-      $users[$user->uid] = $user->name;
-    }
+    $users = _acl_get_usernames($acl_id);
   }
   if (!isset($label)) {
     $label = (isset($record['name']) ? $record['name'] : (isset($record['number']) ? $record['number'] : $acl_id));
@@ -98,7 +107,7 @@ function _acl_edit_form_after_build($form, &$form_state) {
       form_error($form['add'], t("Invalid user specified."));
     }
     else {
-      $user_list[$user->uid] = $user->name;
+      $user_list[$user->uid] = _acl_format_username($user);
       $form['add']['#value'] = NULL;
     }
   }
