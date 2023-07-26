@@ -75,7 +75,7 @@ function _acl_edit_form($acl_id, $label = NULL, $new_acl = FALSE) {
 
   $form['user_list'] = array(
     '#type' => 'hidden',
-    '#default_value' => serialize($users),
+    '#default_value' => json_encode($users),
   );
 
   $form['#after_build'] = array('_acl_edit_form_after_build');
@@ -122,7 +122,7 @@ function _acl_edit_form_after_build($form, &$form_state) {
   else {
     $form['delete_button']['#type'] = 'value';
   }
-  $form['user_list']['#value'] = serialize($user_list);
+  $form['user_list']['#value'] = json_encode($user_list);
 
   return $form;
 }
@@ -170,7 +170,7 @@ function acl_save_form($form, $priority = NULL) {
 function acl_edit_form_get_user_list($form, $get_default = FALSE) {
   if (is_array($form['user_list'])) {
     $return_value = $get_default ? '#default_value' : '#value';
-    return unserialize($form['user_list'][$return_value]);
+    return json_decode($form['user_list'][$return_value], TRUE);
   }
-  return unserialize($form['user_list']);
+  return json_decode($form['user_list'], TRUE);
 }
